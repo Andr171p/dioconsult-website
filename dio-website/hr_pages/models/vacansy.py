@@ -29,7 +29,7 @@ class VacancyPage(Page):
 
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
-        from .forms import VacancyForm
+        from ..forms.vacancy import VacancyForm
 
         context["form"] = VacancyForm()
         return context

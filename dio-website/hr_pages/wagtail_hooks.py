@@ -10,7 +10,7 @@ from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.admin.ui.components import Component
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
-from .models import Vacancy
+from .models.vacansy import Vacancy
 
 
 class VacancyViewSet(SnippetViewSet):
@@ -75,7 +75,7 @@ register_snippet(VacancyViewSet)
 # vacancy/wagtail_hooks.py — 100% Wagtail style
 from django.utils.safestring import mark_safe
 from wagtail import hooks
-from .models import Vacancy
+from .models.vacansy import Vacancy
 
 
 @hooks.register('insert_global_admin_css')

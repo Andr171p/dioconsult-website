@@ -2,7 +2,7 @@ from typing import ClassVar
 import re
 from django import forms
 from utils import check_spam
-from .models import Vacancy
+from ..models.vacansy import Vacancy
 
 class VacancyForm(forms.ModelForm):
     csrftoken = forms.CharField(required=False, widget=forms.HiddenInput())

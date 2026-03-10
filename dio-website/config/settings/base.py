@@ -35,15 +35,16 @@ INSTALLED_APPS = [
     # "chat",
     "feedback",
     "notification",
-    "vacancy",
+    # "vacancy",
     # "ai",
-    "career",
-    'hr_pages'
+    # "career",
+    "hr_pages",
     
-    # "tickets",
+    "tickets",
 
     "pages",
 
+    "jazzmin",
     
     "wagtail.contrib.table_block",
     "wagtail.contrib.settings",
@@ -209,7 +210,7 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dio_website',
+        'NAME': 'dio',
         'USER': 'postgres',
         'PASSWORD': '123321Larik',
         'HOST': 'localhost',
@@ -344,4 +345,21 @@ SITE_DOMAIN = os.environ.get("SITE_DOMAIN")
 
 
 #25.02.2026 add user registration
-# AUTH_USER_MODEL = 'tickets.CustomUser'
+
+AUTH_USER_MODEL = 'tickets.CustomUser'
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Ticket System",
+    "site_header": "HelpDesk Admin",
+    "site_brand": "Support",
+    "welcome_sign": "Добро пожаловать в систему тикетов",
+    "copyright": "Ticket System Ltd",
+    "search_model": ["tickets.Ticket"],
+    "topmenu_links": [
+        {"name": "Главная", "url": "admin:index", "permissions": ["auth.view_user"]},
+    ],
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "theme": "darkly",  # Базовая темная тема
+    "accent": "accent-danger", # Те самые красные акценты
+}

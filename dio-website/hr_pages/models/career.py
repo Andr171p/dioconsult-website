@@ -160,7 +160,7 @@ class CareerPage(Page):
         FieldPanel("content"),
     ]
 
-    subpage_types = ['career.CareerVacancyPage']
+    subpage_types = ['hr_pages.CareerVacancyPage']
     parent_page_types = ['home.HomePage']
     
     class Meta:
@@ -205,7 +205,7 @@ class CareerVacancyPage(Page):
         FieldPanel("content"),
     ]
 
-    parent_page_types = ["career.CareerPage"]
+    parent_page_types = ["hr_pages.CareerPage"]
     subpage_types = []
 
     class Meta:

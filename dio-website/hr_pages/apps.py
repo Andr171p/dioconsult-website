@@ -6,4 +6,4 @@ class HrConfig(AppConfig):
     name = "hr_pages"
 
     def ready(self):  # noqa: PLR6301
-        import vacancy.wagtail_hooks  # noqa: F401, PLC0415, RUF100, W292
+        import hr_pages.wagtail_hooks  # noqa: F401, PLC0415, RUF100, W292

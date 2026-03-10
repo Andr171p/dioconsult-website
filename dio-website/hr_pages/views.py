@@ -2,14 +2,14 @@ from rest_framework import status
 from rest_framework.decorators import api_view, parser_classes, authentication_classes, permission_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .forms import VacancyForm
+from .forms.vacancy import VacancyForm
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 import os
 from django.http import JsonResponse
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import Vacancy
+from .models.vacansy import Vacancy
 # vacancy/views.py — добавь в конец
 from django.http import JsonResponse
 from django.contrib.admin.views.decorators import staff_member_required

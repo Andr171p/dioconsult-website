@@ -3,7 +3,7 @@ import os
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 
-from .models import Vacancy
+from .models.vacansy import Vacancy
 
 
 
