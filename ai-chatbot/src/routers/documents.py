@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..db import crud
 from ..dependencies import get_db
-from ..schemas import Document
+from ..schemas import DocumentOut
 from ..service import index_document, remove_document
 
 router = APIRouter(prefix="/documents", tags=["Documents"])
@@ -12,7 +12,7 @@ router = APIRouter(prefix="/documents", tags=["Documents"])
 @router.post(
     path="/upload",
     status_code=status.HTTP_201_CREATED,
-    response_model=Document,
+    response_model=DocumentOut,
     summary="Загрузка документа в базу знаний",
 )
 async def upload_document(
@@ -21,7 +21,7 @@ async def upload_document(
         title: str | None = Form(default=None, description="Главный заголовок"),
         category: str | None = Form(default=None, description="Категория или тип документа"),
         tags: str | None = Form(default=None, description="Теги через запятую"),
-) -> Document:
+) -> DocumentOut:
     file_name = file.filename
     file_data = await file.read()
     return await index_document(
@@ -32,10 +32,10 @@ async def upload_document(
 @router.get(
     path="/{document_id}",
     status_code=status.HTTP_200_OK,
-    response_model=Document,
+    response_model=DocumentOut,
     summary="Получение документа по его ID"
 )
-async def get_document(document_id: int, session: AsyncSession = Depends(get_db)) -> Document:
+async def get_document(document_id: int, session: AsyncSession = Depends(get_db)) -> DocumentOut:
     document = await crud.read_document(session, document_id)
     if document is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
