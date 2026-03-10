@@ -1,0 +1,6 @@
+{
+  "llm_provider": "YandexCloud",
+  "model_id": "qwen3-235b-a22b-fp8/latest",
+  "temperature": 0.5,
+  "system_prompt": ""
+}
