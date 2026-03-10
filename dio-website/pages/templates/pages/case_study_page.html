@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block content %}
+<article class="case-study font-sans">
+
+    <section class="section is-secondary pt-5 relative min-h-[700px] flex items-center overflow-hidden hero-section">
+        {% if page.main_image %}
+            {% image page.main_image original as bg_image %}
+            <div class="absolute inset-0 z-0">
+                <img 
+                    src="{{ bg_image.url }}" 
+                    alt="{{ page.title }}"
+                    class="w-full h-full object-cover top-0 left-0"
+                >
+                <div class="absolute inset-0 hero-overlay"></div>
+            </div>
+        {% endif %}
+        
+        <div class="container">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <div class="relative z-10 space-y-6">
+                    <span class="inline-block px-4 py-2 rounded-full bg-red-800 text-white heading_h5 mb-4 animate-fadeIn">
+                        {{ page.get_industry_display }}
+                    </span>
+                    <h1 class="text-white heading_h1 text-4xl lg:text-5xl font-bold leading-tight mb-6 drop-shadow-md animate-fadeIn hero-title" style="animation-delay: 0.1s;">
+                        {{ page.title }}
+                    </h1>
+                    {% if page.intro %}
+                        <p class=" text-white    heading_h3 text-lg lg:text-xl mb-8 max-w-prose leading-relaxed animate-fadeIn hero-subtitle" style="animation-delay: 0.2s;">
+                            {{ page.intro|striptags }}
+                        </p>
+                    {% endif %}
+                    <a href="/cases" class="inline-block button is-secondary w-button px-6 py-3 rounded-lg shadow-lg hover:bg-red-50 hover:shadow-xl transition-all duration-300 animate-fadeIn hero-button" style="animation-delay: 0.3s; color: white; box-shadow: 0 0 0 2px white inset;">
+                        Подробнее
+                    </a>
+                </div>
+                <div></div>
+            </div>
+        </div>
+    </section>
+
+    {% for block in page.content %}
+        <section class="section py-16 lg:py-24 case-section">
+            <div class="container">
+
+                {% if block.block_type in "challenge solution technologies metrics" %}
+                    <div class="grid lg:grid-cols-3 gap-12 items-start">
+                        <h2 class="text-3xl lg:text-4xl font-bold leading-tight section-title">
+                            {% if block.block_type == "challenge" %}Задача
+                            {% elif block.block_type == "solution" %}Решение
+                            {% elif block.block_type == "technologies" %}Технологии
+                            {% elif block.block_type == "metrics" %}Ключевые метрики{% endif %}
+                        </h2>
+                        <div class="lg:col-span-2">
+
+                            {% if block.block_type in "challenge solution" %}
+                                <div class="rich-content">
+                                    {{ block.value|richtext }}
+                                </div>
+
+                            {% elif block.block_type == "technologies" %}
+                                <ul class="space-y-4">
+                                    {% for tech in block.value %}
+                                        <li class="flex items-center gap-3">
+                                            <div class="w-3 h-3 bg-red-600 rounded-full flex-shrink-0"></div>
+                                            <span class="text-lg font-medium">{{ tech }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+
+                            <!-- МЕТРИКИ -->
+                            {% elif block.block_type == "metrics" %}
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {% for m in block.value %}
+                                        <div class="bg-black/30 backdrop-blur-sm p-6 rounded-xl border border-red-900/50 shadow-lg">
+                                            <div class="text-3xl font-bold text-red-500">{{ m.value }}</div>
+                                            <div class="text-sm opacity-80 mt-1">{{ m.description }}</div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                {% else %}
+                    <div>
+                        <h2 class="text-3xl lg:text-4xl font-bold mb-8 text-center lg:text-left section-title">
+                            {% if block.block_type == "description" %}Описание проекта
+                            {% elif block.block_type == "results" %}Результаты{% endif %}
+                        </h2>
+
+                        {% if block.block_type == "description" %}
+                            <div class="rich-content">
+                                {{ block.value|richtext }}
+                            </div>
+
+                        {% elif block.block_type == "results" %}
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {% for result in block.value %}
+                                
+                                    <div class="case-item group relative p-8 sm:p-10 rounded-3xl transition-colors duration-300 overflow-hidden cursor-default">
+                                        <div class="relative z-10 flex flex-col items-center text-center gap-4 h-full">
+                                            <div class="flex-shrink-0 w-16 h-16 flex items-center justify-center rounded-2xl bg-red-800 border-2 border-red-800">
+                                                <svg class="w-9 h-9 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            </div>
+                                            <div class="heading_h5 leading-relaxed">
+                                                {{ result.text|richtext }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            </div>
+        </section>
+    {% endfor %}
+
+    <!-- ДРУГИЕ КЕЙСЫ -->
+    {% if other_cases %}
+    <section class="section other-cases-section">
+        <div class="container mx-auto">
+            <div class="flex items-center justify-between mb-12">
+                <h2 class="heading_h2 text-3xl lg:text-4xl mb-0">Другие кейсы</h2>
+                <a href="/cases" class="button is-secondary">
+                    Все кейсы
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+
+            <div class="space-y-6">
+                {% for case in other_cases %}
+                <a href="{{ case.url }}" class="case-bg case-item block group relative p-8 sm:p-10 rounded-3xl transition-colors duration-300 overflow-hidden cursor-pointer">
+                    <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                        <div class="flex-shrink-0 w-24 h-24 md:w-32 md:h-32 flex items-center justify-center rounded-2xl overflow-hidden">
+                            {% if case.customer_logo %}
+                                {% image case.customer_logo width-140 height-140 as case_img %}
+                                <img src="{{ case_img.url }}" alt="{{ case.title }}" class="max-w-full max-h-full object-contain p-2 md:p-4">
+                            {% else %}
+                                <span class="text-3xl md:text-5xl font-bold text-red-500">{{ case.title|first }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="flex-1 min-w-0 text-left">
+                            {% if case.get_industry_display %}
+                            <span class="cat-color text-white inline-block px-3 py-1 md:px-4 md:py-1.5 rounded-full mb-3 heading_h5 font-semibold bg-red-800  text-xs md:text-sm">
+                                {{ case.get_industry_display }}
+                            </span>
+                            {% endif %}
+                            <h3 class="heading_h3 font-bold text-lg md:text-xl leading-tight group-hover:text-red-800 transition-colors duration-300">
+                                {{ case.title }}
+                            </h3>
+                            <p class="heading_h5 line-clamp-2 leading-relaxed mt-2 text-sm md:text-base">
+                                {{ case.intro|striptags|truncatewords:28 }}
+                            </p>
+                        </div>
+                        <div class="hidden md:flex opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <svg class="w-8 h-8 md:w-9 md:h-9 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</article>
+
+<style>
+.cat-color {
+    color: #ffffff !important;
+}
+
+.case-item svg {
+  color: #ffffff !important;
+}
+
+/* ТЁМНАЯ ТЕМА — ТОЧНЫЕ ЦВЕТА ИЗ ТВОЕГО cycle (по умолчанию) */
+.case-section { background: #0b0b0b; color: white; }
+.case-section:nth-child(2n) { background: #131313; }
+.case-section:nth-child(3n) { background: #0d0d0d; }
+.case-section:nth-child(4n) { background: #111111; }
+
+.other-cases-section { background: #0a0a0a; }
+.other-cases-section .case-item { background: #151515; }
+.other-cases-section .case-item:hover { background: #1e1e1e; }
+
+/* СВЕТЛАЯ ТЕМА - применяется когда есть класс dark на html */
+html.dark .case-section { 
+    background: white; 
+    color: #1f2937; 
+    border-bottom: 1px solid #e5e7eb; 
+}
+
+html.dark .case-section:nth-child(2n) { 
+    background: #f9fafb; 
+}
+
+html.dark .case-section:nth-child(3n) { 
+    background: #f3f4f6; 
+}
+
+html.dark .case-section:nth-child(4n) { 
+    background: #f9fafb; 
+}
+
+html.dark .other-cases-section { 
+    background: #f9fafb; 
+}
+
+html.dark .other-cases-section .case-item { 
+    background: white; 
+    border: 1px solid #e5e7eb; 
+}
+
+html.dark .other-cases-section .case-item:hover { 
+    background: #f3f4f6; 
+}
+
+/* Стили для метрик в светлой теме */
+html.dark .bg-black\/30 {
+    background: rgba(243, 244, 246, 0.8) !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+/* Текст наследует цвет от секции */
+.section-title, .rich-content, .case-item, .case-item * { color: inherit; }
+</style>
+
+<style>
+.rich-content {
+    font-size: 1.125rem;
+    line-height: 2;
+}
+.rich-content > * + * { margin-top: 1.5rem; }
+.rich-content p { margin-bottom: 1.5rem; }
+.rich-content img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    margin: 2rem auto;
+}
+.rich-content ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 1.5rem 0;
+}
+.rich-content ul > li {
+    position: relative;
+    padding-left: 2.5rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.8;
+}
+.rich-content ul > li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.75rem;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #ef4444;
+    border-radius: 50%;
+}
+.rich-content ol {
+    counter-reset: list-item;
+    list-style: none;
+    padding-left: 0;
+    margin: 1.5rem 0;
+}
+.rich-content ol > li {
+    counter-increment: list-item;
+    position: relative;
+    padding-left: 2.5rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.8;
+}
+.rich-content ol > li::before {
+    content: counter(list-item) ".";
+    position: absolute;
+    left: 0;
+    color: #ef4444;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+</style>
+
+<!-- === УЛУЧШЕНИЕ КАЧЕСТВА ИЗОБРАЖЕНИЙ === -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function enhanceRichTextImages() {
+        const images = document.querySelectorAll('.rich-content img');
+        images.forEach(img => {
+            const src = img.src;
+            const match = src.match(/\.width-(\d+)\./);
+            if (match && parseInt(match[1]) < 1200) {
+                const newSrc = src.replace(`.width-${match[1]}.`, '.width-1200.');
+                const testImg = new Image();
+                testImg.onload = () => img.src = newSrc;
+                testImg.onerror = () => {
+                    const origSrc = src.replace(`.width-${match[1]}.`, '.original.');
+                    const origImg = new Image();
+                    origImg.onload = () => img.src = origSrc;
+                    origImg.src = origSrc;
+                };
+                testImg.src = newSrc;
+            }
+        });
+    }
+    enhanceRichTextImages();
+    new MutationObserver(enhanceRichTextImages).observe(document.body, { childList: true, subtree: true });
+});
+</script>
+
+{% endblock %}

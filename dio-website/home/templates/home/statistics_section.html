@@ -1,0 +1,115 @@
+{% load wagtailcore_tags wagtailimages_tags static %}
+
+<section class="section is-secondary pt-1 pb-10  ">
+    <div class="container">
+        <div class="margin-top_large">
+            <div class="divider margin-bottom_medium text-center">
+                <h2 class="heading_h4">Наши достижения в цифрах</h2>
+                <p class="paragraph_large text-color_secondary ">
+                    Результаты многолетней работы в сфере автоматизации бизнеса и внедрения информационных систем.
+                </p>
+            </div>
+
+            <ul role="list" class="grid_4-col tablet-2-col mobile-1-col gap-medium w-list-unstyled">
+                {% for achievement in main_achievements %}
+                <li class="stat-item text-center">
+                    
+
+                    <div class="heading_h2 text-color_primary margin-bottom_xsmall counter-element" 
+                         data-value="{{ achievement.value.value }}" data-suffix="{{ achievement.value.suffix }}">
+                        0{{ achievement.value.suffix }}
+                    </div>
+
+                    <h3 class="heading_h5 margin-bottom_xsmall">
+                        {{ achievement.value.label }}
+                    </h3>
+
+
+                    
+                </li>
+                {% endfor %}
+            </ul>
+
+            {% if additional_achievements %}
+            <div class="margin-top_xlarge padding-top_large border-top_light">
+                <ul role="list" class="grid_3-col tablet-1-col gap-medium w-list-unstyled">
+                    {% for achievement in additional_achievements %}
+                    <li class="text-center">
+                        <div class="heading_h3 text-color_primary margin-bottom_xsmall counter-element" 
+                             data-value="{{ achievement.value.value }}">
+                            {{ achievement.value.value }}
+                        </div>
+                        <h4 class="heading_h6 margin-bottom_xsmall">
+                            {{ achievement.value.title }}
+                        </h4>
+                        <p class="paragraph_small text-color_secondary">{{ achievement.value.description|richtext }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<style>
+.counter-element {
+    transition: color 1s ease;
+}
+
+.counter-element.animated {
+    color: var(--accent-color);
+}
+
+
+.animate-on-scroll {
+    animation: countUp 1s ease-out forwards;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function animateCounter(element, start, end, duration, suffix = '') {
+        let startTime = null;
+        
+        function updateCounter(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / (duration * 500), 1);
+            const currentValue = Math.floor(progress * (end - start) + start);
+            element.textContent = currentValue + suffix;
+            
+            if (progress < 1) {
+                requestAnimationFrame(updateCounter);
+            } else {
+                element.classList.add('animated');
+            }
+        }
+        
+        requestAnimationFrame(updateCounter);
+    }
+
+    function isElementInViewport(el) {
+        const rect = el.getBoundingClientRect();
+        return (
+            rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+            rect.bottom >= 0
+        );
+    }
+
+    function handleScroll() {
+        const counters = document.querySelectorAll('.counter-element');
+        counters.forEach(counter => {
+            if (isElementInViewport(counter) && !counter.classList.contains('animated')) {
+                const value = parseInt(counter.getAttribute('data-value'));
+                const suffix = counter.getAttribute('data-suffix') || '';
+                counter.classList.add('animate-on-scroll');
+                animateCounter(counter, 0, value, 2, suffix);
+            }
+        });
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); 
+});
+</script>
+

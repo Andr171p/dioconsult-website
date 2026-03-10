@@ -1,0 +1,116 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% if page.partnership_section %}
+    {% for block in page.partnership_section %}
+        {% if block.block_type == 'partnership' %}
+            <section class="partnership-section section" role="region" aria-label="Partner Section">
+                <div class="container">
+                    <div class="partnership-grid">
+                        <div class="partnership-header">
+                            <h3 class="heading_h2">{{ block.value.headline }}</h3>
+                            <p class="subheading">{{ block.value.subheadline }}</p>
+                        </div>
+                        <div class="logos-grid">
+                            {% for logo in block.value.logos %}
+                                <div class="logo-container1">
+                                    {% image logo.logo width-800 height-900 as img %}
+                                    {% if logo.link %}
+                                        <a href="{{ logo.link }}" class="logo-link">
+                                            <img src="{{ img.url }}" alt="Partner logo" class="partner-logo" loading="lazy">
+                                        </a>
+                                    {% else %}
+                                        <img src="{{ img.url }}" alt="Partner logo" class="partner-logo" loading="lazy">
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<style>
+    .partnership-section {
+        padding: 2rem 1rem;
+    }
+
+    
+
+    .partnership-grid {
+        display: grid;
+        gap: 2rem;
+        grid-template-columns: 1fr 2fr;
+        align-items: center;
+    }
+
+    .partnership-header .heading_h3 {
+        margin-bottom: 0.5rem;
+        font-size: 1.875rem;
+    }
+
+    .partnership-header .subheading {
+        color: #666;
+        font-size: 1.125rem;
+    }
+
+    .logos-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        align-items: center;
+        justify-items: center; 
+    }
+
+    .logo-container1 {
+        width: 200px;
+        height: 100px;
+        background: transparent;
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logo-link, .partner-logo {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    .partner-logo {
+        object-fit: contain;
+        border-radius: 8px;
+        transition: transform 0.2s ease;
+    }
+
+   
+
+    @media (max-width: 768px) {
+        .partnership-grid {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .logos-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .logo-container {
+            width: 150px;
+            height: 75px;
+            margin: 0 auto;
+        }
+
+        .partnership-header .heading_h3 {
+            font-size: 1.5rem;
+        }
+
+        .partnership-header .subheading {
+            font-size: 1rem;
+        }
+    }
+</style>

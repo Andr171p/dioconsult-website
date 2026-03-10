@@ -1,0 +1,339 @@
+{% load static %}
+
+<div class="w-form">
+    <form id="vacancyForm" 
+          enctype="multipart/form-data" 
+          method="post" 
+          class="space-y-6">
+        {% csrf_token %}
+        
+        <input type="hidden" name="title" value="{{ page.title }}">
+
+        <!-- Имя -->
+        <div>
+            <label for="id_name" class="block text-sm font-medium heading_h5 mb-2">Имя *</label>
+            <input type="text" name="name" id="id_name" required
+                   class="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg heading_h5 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300"
+                   placeholder="Ваше имя">
+        </div>
+
+        <!-- Телефон -->
+        <div>
+            <label for="id_phone" class="block text-sm font-medium heading_h5 mb-2">Телефон *</label>
+            <input type="tel" name="phone" id="id_phone" required
+                   class="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg heading_h5 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300"
+                   placeholder="+7 (___) ___-__-__">
+        </div>
+
+        <!-- Email -->
+        <div>
+            <label for="id_email" class="block text-sm font-medium heading_h5 mb-2">Email</label>
+            <input type="email" name="email" id="id_email"
+                   class="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg heading_h5 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300"
+                   placeholder="your@email.com">
+        </div>
+
+        <!-- Резюме -->
+        <div>
+            <label for="id_resume" class="block text-sm font-medium heading_h5 mb-2">Резюме *</label>
+            <input type="file" name="resume" id="id_resume" required accept=".pdf,.doc,.docx,.txt"
+                   class="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg heading_h5 file:bg-red-800 file:text-white file:border-0 file:py-2 file:px-4 file:rounded file:text-sm file:font-semibold hover:file:bg-red-700 cursor-pointer">
+            <small class="text-gray-400 text-sm mt-2 block">Поддерживаемые форматы: PDF, DOC, DOCX, TXT (макс. 5 МБ)</small>
+        </div>
+
+        <!-- Чекбокс и кнопка -->
+        <div class="flex items-center justify-between gap-6">
+            <div class="flex items-start space-x-3 flex-1">
+                <input type="checkbox" name="agreement" id="agreement" required
+                       class="w-4 h-4 mt-1 text-red-600 bg-white/5 border-gray-600 rounded focus:ring-red-500">
+                <label for="agreement" class="text-sm heading_h5">
+                    Я согласен(а) с <a href="/privacy-policy/" target="_blank" class="underline hover:text-red-400">политикой конфиденциальности</a>
+                </label>
+            </div>
+
+            <button type="submit"
+                    class="text-white bg-red-800 heading_h5 py-4 px-8 rounded-lg font-semibold hover:bg-red-700 transition-all duration-300 shadow-lg flex items-center justify-center space-x-2 whitespace-nowrap">
+                <span>Отправить резюме</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+            </button>
+        </div>
+    </form>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('vacancyForm');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!document.getElementById('agreement').checked) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Внимание',
+                text: 'Пожалуйста, согласитесь с политикой конфиденциальности',
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        const fileInput = document.getElementById('id_resume');
+        if (fileInput.files[0]) {
+            const fileSize = fileInput.files[0].size;
+            const maxSize = 5 * 1024 * 1024;
+            
+            if (fileSize > maxSize) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Файл слишком большой',
+                    text: 'Максимальный размер файла: 5MB',
+                    confirmButtonColor: '#dc2626',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+        }
+        
+        const nameInput = document.getElementById('id_name');
+        const phoneInput = document.getElementById('id_phone');
+        
+        if (!nameInput.value.trim()) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Заполните поле',
+                text: 'Пожалуйста, введите ваше имя',
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'OK'
+            });
+            nameInput.focus();
+            return;
+        }
+        
+        if (!phoneInput.value.trim() || phoneInput.value === '+7 (') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Заполните поле',
+                text: 'Пожалуйста, введите номер телефона',
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'OK'
+            });
+            phoneInput.focus();
+            return;
+        }
+        
+        const phoneDigits = phoneInput.value.replace(/\D/g, '');
+        if (phoneDigits.length < 11) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Неверный формат',
+                text: 'Пожалуйста, введите полный номер телефона',
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'OK'
+            });
+            phoneInput.focus();
+            return;
+        }
+        
+        Swal.fire({
+            title: 'Отправка резюме...',
+            text: 'Пожалуйста, подождите',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        const formData = new FormData(form);
+        
+        fetch('/vacancy/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw errorData;
+                }).catch(() => {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Успешно!',
+                text: data.message || 'Резюме успешно отправлено',
+                confirmButtonColor: '#16a34a',
+                confirmButtonText: 'OK'
+            });
+            form.reset();
+            const phoneInput = document.getElementById('id_phone');
+            if (phoneInput) {
+                phoneInput.value = '+7 (';
+            }
+        })
+        .catch(error => {
+            console.error('Error details:', error);
+            
+            let errorMessage = 'Не удалось отправить резюме. Попробуйте еще раз.';
+            
+            if (error.errors) {
+                const errorMessages = [];
+                for (const [field, messages] of Object.entries(error.errors)) {
+                    const fieldName = getFieldName(field);
+                    errorMessages.push(`${fieldName}: ${messages.join(', ')}`);
+                }
+                errorMessage = errorMessages.join('\n');
+            } else if (error.message) {
+                errorMessage = error.message;
+            } else if (typeof error === 'string') {
+                errorMessage = error;
+            } else if (error.detail) {
+                errorMessage = error.detail;
+            }
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Ошибка отправки',
+                html: errorMessage.replace(/\n/g, '<br>'),
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'OK'
+            });
+        });
+    });
+
+    function getFieldName(field) {
+        const fieldNames = {
+            'name': 'Имя',
+            'phone': 'Телефон',
+            'email': 'Email',
+            'resume': 'Резюме',
+            'agreement': 'Согласие'
+        };
+        return fieldNames[field] || field;
+    }
+
+    const phoneInput = document.getElementById('id_phone');
+    if (phoneInput) {
+        phoneInput.value = '+7 (';
+        
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value;
+            
+            if (value === '') {
+                return;
+            }
+            
+            if (value.length > 0 && !value.startsWith('+7 (')) {
+                let digits = value.replace(/\D/g, '');
+                if (digits.startsWith('8')) {
+                    digits = '7' + digits.substring(1);
+                }
+                
+                let formatted = '+7 (';
+                if (digits.length > 1) formatted += digits.substring(1, 4);
+                if (digits.length >= 5) formatted += ') ' + digits.substring(4, 7);
+                if (digits.length >= 8) formatted += '-' + digits.substring(7, 9);
+                if (digits.length >= 10) formatted += '-' + digits.substring(9, 11);
+                
+                e.target.value = formatted;
+                e.target.setSelectionRange(formatted.length, formatted.length);
+                return;
+            }
+            
+            if (value.length < 4 && value !== '') {
+                e.target.value = '+7 (';
+                e.target.setSelectionRange(4, 4);
+                return;
+            }
+            
+            let digits = value.replace(/\D/g, '');
+            
+            if (digits.startsWith('8')) {
+                digits = '7' + digits.substring(1);
+            }
+            
+            if (digits.length > 11) {
+                digits = digits.substring(0, 11);
+            }
+            
+            let formatted = '+7 (';
+            
+            if (digits.length > 1) {
+                formatted += digits.substring(1, 4);
+            }
+            if (digits.length >= 5) {
+                formatted += ') ' + digits.substring(4, 7);
+            }
+            if (digits.length >= 8) {
+                formatted += '-' + digits.substring(7, 9);
+            }
+            if (digits.length >= 10) {
+                formatted += '-' + digits.substring(9, 11);
+            }
+            
+            e.target.value = formatted;
+            e.target.setSelectionRange(formatted.length, formatted.length);
+        });
+        
+        phoneInput.addEventListener('keydown', function(e) {
+            const selectionStart = this.selectionStart;
+            const selectionEnd = this.selectionEnd;
+            const isFullSelection = selectionStart === 0 && selectionEnd === this.value.length;
+            
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                if (isFullSelection) {
+                    return;
+                }
+                
+                if (selectionStart <= 4 && selectionEnd <= 4) {
+                    e.preventDefault();
+                    return;
+                }
+            }
+        });
+        
+        phoneInput.addEventListener('focus', function() {
+            if (this.value === '') {
+                this.value = '+7 (';
+                this.setSelectionRange(4, 4);
+            }
+        });
+        
+        phoneInput.addEventListener('blur', function() {
+            if (this.value === '+7 (') {
+                this.value = '';
+            }
+        });
+        
+        phoneInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pasteData = e.clipboardData.getData('text').replace(/\D/g, '');
+            if (pasteData) {
+                let digits = pasteData;
+                
+                if (digits.startsWith('8')) {
+                    digits = '7' + digits.substring(1);
+                }
+                
+                if (digits.length > 11) digits = digits.substring(0, 11);
+                
+                let formatted = '+7 (';
+                if (digits.length > 1) formatted += digits.substring(1, 4);
+                if (digits.length >= 5) formatted += ') ' + digits.substring(4, 7);
+                if (digits.length >= 8) formatted += '-' + digits.substring(7, 9);
+                if (digits.length >= 10) formatted += '-' + digits.substring(9, 11);
+                
+                this.value = formatted;
+                this.setSelectionRange(formatted.length, formatted.length);
+            }
+        });
+    }
+});
+</script>

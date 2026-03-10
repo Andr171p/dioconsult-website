@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags static %}
+
+{% block content %}
+  <section class="section pt-10">
+    <div class="container ">
+
+      <div class="header mb-0 pt-0">
+        <h2 class="heading_h2  font-bold">Программы</h2>
+      </div>
+
+<div class="mb-16">
+    <div class="flex flex-wrap justify-center gap-3 sm:gap-5">
+        <a href="?category=all"
+           class="heading_h5 group px-7 py-3.5 rounded-2xl font-medium text-base transition-all duration-200 flex items-center gap-2.5 relative
+                  {% if selected_category == 'all' or not selected_category %}
+                      bg-red-900 text-white shadow-sm
+                  {% else %}
+                      hover:text-gray-300
+                  {% endif %}">
+            <span>Все программы</span>
+            {% if selected_category == 'all' or not selected_category %}
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                </svg>
+            {% else %}
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-red-900 rounded-full transition-all duration-300 group-hover:w-6"></span>
+            {% endif %}
+        </a>
+
+        {% for cat in categories %}
+        <a href="?category={{ cat.slug }}"
+           class="heading_h5 group px-7 py-3.5 rounded-2xl font-medium text-base transition-all duration-200 flex items-center gap-2.5 relative
+                  {% if selected_category == cat.slug %}
+                      bg-red-900 text-white shadow-sm
+                  {% else %}
+                      hover:text-gray-300
+                  {% endif %}">
+            <span>{{ cat.name }}</span>
+            {% if selected_category == cat.slug %}
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                </svg>
+            {% else %}
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-red-900 rounded-full transition-all duration-300 group-hover:w-6"></span>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+      <div class="w-layout-grid grid_3-col gap-2 lg:gap-3 mt-12">
+        {% for product in products %}
+          <a href="{% pageurl product %}" class="card relative overflow-hidden rounded-xl shadow-lg group" style="height: 400px;">
+            {% if product.hero_image %}
+              {% image product.hero_image fill-600x400 class="w-full h-full object-cover absolute top-0 left-0 z-0 transition-transform duration-1000 group-hover:scale-125" %}
+            {% endif %}
+            <div class="relative z-10 flex flex-col justify-between h-full p-6 bg-black/15 text-white">
+              <div class="heading_h5 flex items-center justify-between mb-4">
+                <div></div>
+                {% if product.category %}
+                  <span class="px-2 py-1 rounded-full bg-red-600/50 text-white text-xs font-medium">
+                    {{ product.category.name }}
+                  </span>
+                {% endif %}
+              </div>
+
+              <div class="space-y-3 flex-grow">
+                <h3 class="heading_h4 text-white">{{ product.title }}</h3>
+                {% if product.description %}
+                  <p class="subheading text-gray-200 line-clamp-2">
+                    {{ product.description|striptags|truncatewords:14 }}
+                  </p>
+                {% endif %}
+              </div>
+
+              <div class="mt-auto text-white text-xl">
+                Подробнее
+                <svg class="w-4 h-4 ml-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+          </a>
+        {% empty %}
+          <div class="col-span-3 py-12">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100/20 text-red-400 rounded-full mb-4 backdrop-blur-sm">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-400 mb-2">Программы не найдены</h3>
+            <p class="text-gray-500 max-w-md mx-auto">Скоро здесь появятся наши решения</p>
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if products.has_other_pages %}
+        <div class="mt-12">
+          <ul class="inline-flex gap-2">
+            {% if products.has_previous %}
+              <li>
+                <a href="?page={{ products.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}" class="px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-red-600 hover:text-white transition-all">
+                  Предыдущая
+                </a>
+              </li>
+            {% endif %}
+            {% for num in products.paginator.page_range %}
+              <li>
+                <a href="?page={{ num }}{% if selected_category %}&category={{ selected_category }}{% endif %}" class="px-4 py-2 rounded-full {% if products.number == num %}bg-red-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %} hover:bg-red-600 hover:text-white transition-all">
+                  {{ num }}
+                </a>
+              </li>
+            {% endfor %}
+            {% if products.has_next %}
+              <li>
+                <a href="?page={{ products.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}" class="px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-red-600 hover:text-white transition-all">
+                  Следующая
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <style>
+    .grid_3-col {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      -webkit-line-clamp: 2;
+    }
+
+    @media (max-width: 900px) {
+      .grid_3-col { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .grid_3-col { grid-template-columns: 1fr; }
+    }
+  </style>
+
+{% endblock %}

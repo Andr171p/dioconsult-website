@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags static %}
+
+{% block content %}
+<section id="certificates-section" class="section pt-10">
+    <div class="container">
+        <!-- Заголовок -->
+        <div class="mb-12">
+            <h2 class="heading_h2 font-bold">Сертификаты</h2>
+            {% if page.intro %}
+                <p class="mt-6 max-w-2xl heading_h5 text-gray-400">{{ page.intro }}</p>
+            {% endif %}
+        </div>
+
+        <!-- СЕРТИФИКАТЫ -->
+        <div class="space-y-10">
+            {% for cert in certificates %}
+            <div class="case-bg case-item block group relative p-8 sm:p-10 rounded-3xl transition-colors duration-300
+                      bg-[#151515] overflow-hidden cursor-pointer
+                      focus-visible:outline focus-visible:outline-4 focus-visible:outline-red-800/30 focus-visible:outline-offset-4">
+                <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                    <!-- Изображение сертификата -->
+                    <div class="flex-shrink-0 w-32 h-40 flex items-center justify-center rounded-2xl overflow-hidden ">
+                        {% if cert.thumbnail %}
+                            {% image cert.thumbnail width-140 height-180 as cert_img %}
+                            <img src="{{ cert_img.url }}" alt="{{ cert.title }}"
+                                 class="max-w-full max-h-full object-contain p-2">
+                        {% else %}
+                            <span class="text-5xl font-bold text-red-500">
+                                C
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Контент -->
+                    <div class="flex-1 min-w-0 text-left">
+                        <h3 class="heading_h3 font-bold text-xl leading-tight group-hover:text-red-800 transition-colors duration-300">
+                            {{ cert.title }}
+                        </h3>
+                        
+                        <p class="heading_h5 leading-relaxed mt-2 text-base ">
+                            {{ cert.issuer }}
+                        </p>
+                        
+                        <p class="heading_h5 text-sm mt-1">
+                            Выдан: {{ cert.issue_date|date:"d.m.Y" }}
+                        </p>
+
+                        {% if cert.document %}
+                            <a href="{{ cert.document.url }}" target="_blank" 
+                                class=" heading_h5 inline-flex items-center justify-center gap-2 mt-4 px-5 py-2.5 
+                                         font-bold text-red-700 
+                                        border-2 border-red-800 rounded-full 
+                                        hover:bg-red-800 hover:text-white 
+                                        transition-all duration-300 
+                                        group/pdf">
+                                <svg class="w-4 h-4 transition-transform duration-300 group-hover/pdf:scale-110" 
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                Скачать PDF
+                            </a>
+                            {% endif %}
+                    </div>
+
+                    <div class="hidden md:flex opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <svg class="w-9 h-9 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-24 text-gray-600">
+                <h3 class="text-3xl font-bold mb-4 text-gray-800">Сертификатов пока нет</h3>
+                <p class="max-w-md mx-auto text-lg">Скоро здесь появятся наши сертификаты</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ПАГИНАЦИЯ -->
+        {% if certificates.has_other_pages %}
+        <div class="text-center mt-16">
+            <div class="inline-flex items-center gap-2 bg-white rounded-2xl p-3 border border-gray-300 shadow-md">
+                {% if certificates.has_previous %}
+                <a href="?page={{ certificates.previous_page_number }}"
+                   class="px-5 py-2.5 text-sm font-medium rounded-xl transition-all text-gray-700 hover:text-red-600 hover:bg-red-50">
+                    Назад
+                </a>
+                {% endif %}
+                
+                {% for num in certificates.paginator.page_range %}
+                    {% if certificates.number == num %}
+                    <span class="px-5 py-2.5 text-sm font-bold rounded-xl bg-red-600 text-white">{{ num }}</span>
+                    {% elif num > certificates.number|add:-3 and num < certificates.number|add:3 %}
+                    <a href="?page={{ num }}"
+                       class="px-5 py-2.5 text-sm font-medium rounded-xl transition-all text-gray-700 hover:text-red-600 hover:bg-red-50">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if certificates.has_next %}
+                <a href="?page={{ certificates.next_page_number }}"
+                   class="px-5 py-2.5 text-sm font-medium rounded-xl transition-all text-gray-700 hover:text-red-600 hover:bg-red-50">
+                    Вперед
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+.group\\/pdf {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.group\\/pdf:hover {
+  box-shadow: 0 0 20px rgba(153, 27, 27, 0.3);
+  transform: translateY(-1px);
+}
+    .case-item {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+    }
+
+    @media (max-width: 768px) {
+        .case-item > div {
+            flex-direction: column !important;
+            text-align: center;
+        }
+        .case-item .md\:flex { justify-content: center; }
+        .case-item .text-left { text-align: center; }
+    }
+</style>
+{% endblock %}

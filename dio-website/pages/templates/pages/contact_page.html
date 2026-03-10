@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% load wagtailcore_tags wagtailimages_tags wagtailembeds_tags static %}
+
+{% block content %}
+<article class="w-full">
+  <!-- Hero секция -->
+  <section class="section is-secondary pt-5 relative min-h-[700px] flex items-center overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-red-900/30 to-gray-900"></div>
+    </div>
+
+    <div class="container relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div class="space-y-6">
+          <span class="inline-block px-4 py-2 rounded-full bg-red-800 text-white heading_h5 mb-4 animate-fadeIn">
+            Контакты
+          </span>
+          <h1 class="heading_h1 text-4xl lg:text-5xl font-bold leading-tight mb-6 text-white drop-shadow-md animate-fadeIn" style="animation-delay: 0.1s;">
+            Свяжитесь с нами
+          </h1>
+          <p class="heading_h3 text-lg lg:text-xl mb-8 max-w-prose leading-relaxed text-white/90 animate-fadeIn" style="animation-delay: 0.2s;">
+            Мы всегда рады помочь вам в решении бизнес-задач. Обращайтесь по любым вопросам!
+          </p>
+        </div>
+        <div class="flex justify-center">
+          <div class="relative w-64 h-64 lg:w-80 lg:h-80">
+            <div class="absolute inset-0 rounded-full bg-red-800 animate-pulse"></div>
+            <div class="relative z-10 w-full h-full flex items-center justify-center">
+              <i class="fas fa-headset text-white text-6xl lg:text-8xl"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Контактная информация и реквизиты -->
+  <section class="section is-secondary">
+    <div class="container">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <!-- Контакты -->
+        <div class="lg:col-span-1 space-y-8">
+          <!-- Контактная информация -->
+          <div class="case-item group relative p-8 sm:p-10 rounded-3xl transition-colors duration-300 overflow-hidden cursor-default gs-reveal">
+            <div class="relative z-10 space-y-8">
+              <div class="flex items-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-red-800 flex items-center justify-center mr-4">
+                  <i class="fas fa-address-book text-xl"></i>
+                </div>
+                <h2 class="heading_h2 font-bold">Контакты</h2>
+              </div>
+              
+              <div class="space-y-6">
+                {% if page.address %}
+                <div class="flex items-start space-x-4">
+                  <i class="fas fa-map-marker-alt mt-1 text-lg"></i>
+                  <div>
+                    <p class="heading_h5 font-medium mb-1">Адрес:</p>
+                    <p class="heading_h5">{{ page.address }}</p>
+                  </div>
+                </div>
+                {% endif %}
+                
+                {% if page.phone %}
+                <div class="flex items-center space-x-4">
+                  <i class="fas fa-phone text-lg"></i>
+                  <div>
+                    <p class="heading_h5 font-medium mb-1">Телефон:</p>
+                    <a href="tel:{{ page.phone }}" class="heading_h5 font-semibold hover:text-red-400 transition-colors duration-200">
+                      {{ page.phone }}
+                    </a>
+                  </div>
+                </div>
+                {% endif %}
+                
+                {% if page.email %}
+                <div class="flex items-center space-x-4">
+                  <i class="fas fa-envelope text-lg"></i>
+                  <div>
+                    <p class="heading_h5 font-medium mb-1">Email:</p>
+                    <a href="mailto:{{ page.email }}" class="heading_h5 font-semibold hover:text-red-400 transition-colors duration-200">
+                      {{ page.email }}
+                    </a>
+                  </div>
+                </div>
+                {% endif %}
+                
+                {% if page.work_hours %}
+                <div class="flex items-start space-x-4">
+                  <i class="fas fa-clock mt-1 text-lg"></i>
+                  <div>
+                    <p class="heading_h5 font-medium mb-1">Режим работы:</p>
+                    <p class="heading_h5">{{ page.work_hours }}</p>
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Юридические данные -->
+          {% if page.legal_name or page.inn %}
+          <div class="case-item group relative p-8 sm:p-10 rounded-3xl transition-colors duration-300 overflow-hidden cursor-default gs-reveal">
+            <div class="relative z-10">
+              <div class="flex items-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-red-800 flex items-center justify-center mr-4">
+                  <i class="fas fa-balance-scale text-xl"></i>
+                </div>
+                <h2 class="heading_h2 font-bold">Реквизиты</h2>
+              </div>
+              
+              <div class="space-y-4">
+                {% if page.legal_name %}
+                <div>
+                  <p class="heading_h3 font-semibold mb-3">{{ page.legal_name }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="space-y-3">
+                  {% if page.inn %}
+                  <p><span class="heading_h5 font-medium">ИНН:</span> 
+                     <span class="heading_h5 font-semibold">{{ page.inn }}</span></p>
+                  {% endif %}
+                  
+                  {% if page.ogrn %}
+                  <p><span class="heading_h5 font-medium">ОГРН:</span> 
+                     <span class="heading_h5 font-semibold">{{ page.ogrn }}</span></p>
+                  {% endif %}
+                  
+                  {% if page.kpp %}
+                  <p><span class="heading_h5 font-medium">КПП:</span> 
+                     <span class="heading_h5 font-semibold">{{ page.kpp }}</span></p>
+                  {% endif %}
+                  
+                  {% if page.okpo %}
+                  <p><span class="heading_h5 font-medium">ОКПО:</span> 
+                     <span class="heading_h5 font-semibold">{{ page.okpo }}</span></p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Карта и основная информация -->
+        <div class="lg:col-span-2 space-y-12">
+          <!-- Карта -->
+          {% if page.map_embed_code %}
+          <div class="gs-reveal">
+            <div class="case-item group relative p-8 sm:p-10 rounded-3xl transition-colors duration-300 overflow-hidden cursor-default">
+              <div class="relative z-10">
+                <div class="flex items-center mb-8">
+                  <div class="w-12 h-12 rounded-2xl bg-red-800 flex items-center justify-center mr-4">
+                    <i class="fas fa-map-marked-alt text-xl"></i>
+                  </div>
+                  <h2 class="heading_h2 font-bold">Как нас найти</h2>
+                </div>
+                
+                <div class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                  {{ page.map_embed_code|safe }}
+                </div>
+                
+                <div class="mt-6 flex items-center justify-center space-x-4">
+                  <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 rounded-full bg-red-600"></div>
+                    <span class="heading_h5 text-sm">Наш офис</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <span class="heading_h5 text-sm">Парковка</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span class="heading_h5 text-sm">Остановка</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Информация для ИТ-аккредитации -->
+          <div class="gs-reveal">
+            <div class="case-item group relative p-8 sm:p-10 rounded-3xl transition-colors duration-300 overflow-hidden cursor-default">
+              <div class="relative z-10">
+                <div class="flex items-center mb-8">
+                  <div class="w-12 h-12 rounded-2xl bg-red-800 flex items-center justify-center mr-4">
+                    <i class="fas fa-laptop-code text-xl"></i>
+                  </div>
+                  <h2 class="heading_h2 font-bold">Для ИТ-аккредитации</h2>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <!-- Коды ОКВЭД -->
+                  {% if page.okved_codes %}
+                  <div class="space-y-4">
+                    <h3 class="heading_h3 font-semibold flex items-center">
+                      <i class="fas fa-file-contract mr-2"></i>
+                      Коды ОКВЭД
+                    </h3>
+                    <div class="prose max-w-none heading_h5">
+                      {{ page.okved_codes|richtext }}
+                    </div>
+                  </div>
+                  {% endif %}
+
+                  <!-- ИТ-деятельность -->
+                  {% if page.it_activity_codes %}
+                  <div class="space-y-4">
+                    <h3 class="heading_h3 font-semibold flex items-center">
+                      <i class="fas fa-code mr-2"></i>
+                      ИТ-деятельность (№449)
+                    </h3>
+                    <div class="prose max-w-none heading_h5">
+                      {{ page.it_activity_codes|richtext }}
+                    </div>
+                  </div>
+                  {% endif %}
+                </div>
+
+                <!-- Стоимость услуг -->
+                {% if page.price_info %}
+                <div class="mt-8 pt-8 border-t border-red-800/30">
+                  <h3 class="heading_h3 font-semibold flex items-center mb-4">
+                    <i class="fas fa-dollar-sign mr-2"></i>
+                    Информация о стоимости
+                  </h3>
+                  <div class="prose max-w-none heading_h5">
+                    {{ page.price_info|richtext }}
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Технологии -->
+          {% if page.technologies %}
+          <div class="gs-reveal">
+            <div class="case-item group relative p-8 sm:p-10 rounded-3xl transition-colors duration-300 overflow-hidden cursor-default">
+              <div class="relative z-10">
+                <div class="flex items-center mb-8">
+                  <div class="w-12 h-12 rounded-2xl bg-red-800 flex items-center justify-center mr-4">
+                    <i class="fas fa-cogs text-xl"></i>
+                  </div>
+                  <h2 class="heading_h2 font-bold">Технологии</h2>
+                </div>
+                
+                <div class="flex flex-wrap gap-3">
+                  {% for tech in tech_list %}
+                    <span class="heading_h5 px-4 py-2 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 
+                                hover:border-red-800/50 hover:bg-red-900/20 transition-all duration-300">
+                      {{ tech|richtext }}
+                    </span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Динамические блоки -->
+          {% for block in page.dynamic_blocks %}
+            {% include_block block %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Дополнительная информация -->
+  {% if page.additional_info %}
+  <section class="section is-secondary">
+    <div class="container">
+      <div class="case-item group relative p-8 sm:p-10 rounded-3xl transition-colors duration-300 overflow-hidden cursor-default gs-reveal">
+        <div class="relative z-10">
+          <div class="flex items-center mb-8">
+            <div class="w-12 h-12 rounded-2xl bg-red-800 flex items-center justify-center mr-4">
+              <i class="fas fa-info-circle text-xl"></i>
+            </div>
+            <h2 class="heading_h2 font-bold">Дополнительная информация</h2>
+          </div>
+          
+          <div class="prose max-w-none heading_h5">
+            {{ page.additional_info|richtext }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+</article>
+
+<style>
+  .gs-reveal { opacity: 0; transform: translateY(20px); }
+  
+  .animate-fadeIn {
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards;
+  }
+  
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+  
+  .case-item {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+  }
+  
+  .case-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.utils.toArray('.gs-reveal').forEach(element => {
+        gsap.fromTo(element, { opacity: 0, y: 20 }, {
+          opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
+          scrollTrigger: { 
+            trigger: element, 
+            start: "top 90%", 
+            toggleActions: "play none none reverse" 
+          }
+        });
+      });
+    }
+  });
+  
+  document.querySelectorAll('.animate-fadeIn').forEach((el, index) => {
+    el.style.animationDelay = `${index * 0.1}s`;
+  });
+</script>
+{% endblock %}

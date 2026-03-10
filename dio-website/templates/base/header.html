@@ -1,0 +1,475 @@
+{% load wagtailcore_tags wagtailimages_tags wagtailsettings_tags static %}
+
+<nav class="main-nav">
+  <div class="main-nav__container">
+    <!-- Логотип -->
+    <div class="main-nav__brand">
+      <a href="/" class="brand-link">
+        {% get_settings use_default_site=True as settings %}
+        {% if settings.base.HeaderSettings.logo %}
+          {% image settings.base.HeaderSettings.logo width-80 height-80 as logo %}
+          <div class="brand-logo">
+            <img
+              src="{{ logo.url }}"
+              alt="{{ settings.base.HeaderSettings.site_title|default:'Логотип сайта' }}"
+              class="brand-logo__image"
+            >
+          </div>
+        {% else %}
+          <div class="brand-logo">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
+              <path d="M16 0C7.164 0 0 7.164 0 16s7.164 16 16 16 16-7.164 16-16S24.836 0 16 0zm0 28C9.373 28 4 22.627 4 16S9.373 4 16 4s12 5.373 12 12-5.373 12-12 12z"/>
+              <path d="M16 8c-4.418 0-8 3.582-8 8s3.582 8 8 8 8-3.582 8-8-3.582-8-8-8zm0 12c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z"/>
+            </svg>
+          </div>
+        {% endif %}
+        <span class="heading_h4 brand-name">{{ settings.base.HeaderSettings.site_title }}</span>
+      </a>
+    </div>
+
+    <div class="main-nav__menu  ">
+      <ul class="nav-list">
+        {% for item in settings.base.HeaderSettings.nav_items %}
+          <li class="nav-item {% if item.value.menu_type != 'none' %}nav-item--dropdown{% endif %}">
+            {% if item.value.menu_type == "none" %}
+              <a
+                href="{% if item.value.page %}{{ item.value.page.url }}{% else %}{{ item.value.external_url|default:'#' }}{% endif %}"
+                class="nav-link heading_h1"
+              >
+                {{ item.value.name }}
+              </a>
+            {% else %}
+              <div class="dropdown">
+                <a 
+                  href="{% if item.value.page %}{{ item.value.page.url }}{% else %}{{ item.value.external_url|default:'#' }}{% endif %}"
+                  class="dropdown__toggle-link heading_h4"
+                >
+                  {{ item.value.name }}
+                </a>
+                <button class="dropdown__toggle" aria-expanded="false">
+                  <svg class="dropdown__chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M4 6l4 4 4-4"/>
+                  </svg>
+                </button>
+                
+                {% if item.value.menu_type == "simple" %}
+                  <div class="dropdown__menu heading_h4">
+                    <div class="dropdown__content">
+                      {% for subitem in item.value.simple_dropdown_items %}
+                        <a
+                          href="{% if subitem.page %}{{ subitem.page.url }}{% else %}{{ subitem.external_url|default:'#' }}{% endif %}"
+                          class="dropdown__link"
+                        >
+                          {{ subitem.name }}
+                        </a>
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% elif item.value.menu_type == "grouped" %}
+                  <div class="dropdown__menu dropdown__menu--mega heading_h4 ">
+                    <div class="dropdown__content">
+                      <div class="mega-grid">
+                        {% for group in item.value.dropdown_groups %}
+                          <div class="mega-group">
+                            <h4 class="mega-group__title">{{ group.group_title }}</h4>
+                            <div class="mega-group__items">
+                              {% for subitem in group.value.items %}
+                                <a
+                                  href="{% if subitem.value.page %}{{ subitem.value.page.url }}{% else %}{{ subitem.value.external_url|default:'#' }}{% endif %}"
+                                  class="mega-item"
+                                >
+                                  <div class="mega-item__icon">
+                                    {% if subitem.value.icon_svg %}
+                                      {{ subitem.value.icon_svg|safe }}
+                                    {% else %}
+                                      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                        <circle cx="10" cy="10" r="3"/>
+                                      </svg>
+                                    {% endif %}
+                                  </div>
+                                  <div class="mega-item__content">
+                                    <div class="mega-item__title">{{ subitem.value.name }}</div>
+                                    {% if subitem.value.description %}
+                                      <div class="mega-item__desc">{{ subitem.value.description }}</div>
+                                    {% endif %}
+                                  </div>
+                                </a>
+                              {% endfor %}
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="main-nav__actions">
+      
+      <button onclick="document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' });" href="your-link-here" class="animated-btn-tilda">
+  <svg viewBox="0 0 160 45" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
+    <rect x="0" y="0" width="160" height="45" rx="8" ry="8"
+          fill="none"
+          stroke="#fff"
+          stroke-width="2"
+          stroke-dasharray="0 422"
+          stroke-dashoffset="0"
+          style="transition: all 1.35s cubic-bezier(0.19,1,0.22,1);"/>
+  </svg>
+  {{ settings.base.HeaderSettings.consultation_button_text }}
+</button>
+      
+
+
+
+    
+
+
+
+ 
+    </div>
+
+    <!-- Мобильное меню -->
+    <button class="mobile-menu-toggle" aria-label="Открыть меню">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Мобильная навигация -->
+    <div class="mobile-nav heading_h3">
+      <div class="mobile-nav__header">
+        <div class="mobile-nav__brand">
+          <a href="/" class="brand-link">
+            {% if settings.base.HeaderSettings.logo %}
+              {% image settings.base.HeaderSettings.logo width-40 height-40 as logo %}
+              <div class="brand-logo">
+                <img src="{{ logo.url }}" alt="{{ settings.base.HeaderSettings.site_title }}" class="brand-logo__image">
+              </div>
+            {% endif %}
+            <span class="brand-name">{{ settings.base.HeaderSettings.site_title }}</span>
+          </a>
+        </div>
+        <button class="mobile-nav__close" aria-label="Закрыть меню">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="mobile-nav__content">
+        <ul class="mobile-nav__list">
+          {% for item in settings.base.HeaderSettings.nav_items %}
+            <li class="mobile-nav__item">
+              {% if item.value.menu_type == "none" %}
+                <a
+                  href="{% if item.value.page %}{{ item.value.page.url }}{% else %}{{ item.value.external_url|default:'#' }}{% endif %}"
+                  class="mobile-nav__link"
+                  onclick="closeMobileMenu()"
+                >
+                  {{ item.value.name }}
+                </a>
+              {% else %}
+                <div class="mobile-nav__dropdown">
+                  <div class="mobile-nav__link-container">
+                    <a
+                      href="{% if item.value.page %}{{ item.value.page.url }}{% else %}{{ item.value.external_url|default:'#' }}{% endif %}"
+                      class="mobile-nav__link"
+                      onclick="closeMobileMenu()"
+                    >
+                      {{ item.value.name }}
+                    </a>
+                    <button class="mobile-nav__dropdown-toggle" aria-expanded="false" onclick="toggleMobileDropdown(this)">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M4 6l4 4 4-4"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="mobile-nav__dropdown-content">
+                    {% if item.value.menu_type == "simple" %}
+                      {% for subitem in item.value.simple_dropdown_items %}
+                        <a
+                          href="{% if subitem.page %}{{ subitem.page.url }}{% else %}{{ subitem.external_url|default:'#' }}{% endif %}"
+                          class="mobile-nav__sublink"
+                          onclick="closeMobileMenu()"
+                        >
+                          {{ subitem.name }}
+                        </a>
+                      {% endfor %}
+                    {% elif item.value.menu_type == "grouped" %}
+                      {% for group in item.value.dropdown_groups %}
+                        <div class="mobile-nav__group">
+                          <div class="mobile-nav__group-title">{{ group.group_title }}</div>
+                          {% for subitem in group.value.items %}
+                            <a
+                              href="{% if subitem.value.page %}{{ subitem.value.page.url }}{% else %}{{ subitem.value.external_url|default:'#' }}{% endif %}"
+                              class="mobile-nav__sublink"
+                              onclick="closeMobileMenu()"
+                            >
+                              {{ subitem.value.name }}
+                            </a>
+                          {% endfor %}
+                        </div>
+                      {% endfor %}
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+        <div class="mobile-nav__actions">
+          <button 
+            onclick="closeMobileMenu(); document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' });"
+            class="button button--full"
+          >
+            {{ settings.base.HeaderSettings.consultation_button_text }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+
+<style>
+
+/* Отступ для контента под фиксированным хедером */
+body {
+  padding-top: 70px;
+}
+
+/* Предотвращение скролла при открытом мобильном меню */
+body.no-scroll {
+  overflow: hidden;
+}
+</style>
+
+
+
+<style>
+.button3 {
+  position: relative;
+  padding: 12px 35px;
+  background: #920707;
+  font-size: 17px;
+  font-weight: 500;
+  color: #181818;
+  border: 3px solid #920707;
+  border-radius: 8px;
+  box-shadow: 0 0 0 #9207078c;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.star-1 {
+  position: absolute;
+  top: 20%;
+  left: 20%;
+  width: 25px;
+  height: auto;
+  filter: drop-shadow(0 0 0 #fffdef);
+  z-index: -5;
+  transition: all 1s cubic-bezier(0.05, 0.83, 0.43, 0.96);
+}
+
+.star-2 {
+  position: absolute;
+  top: 45%;
+  left: 45%;
+  width: 15px;
+  height: auto;
+  filter: drop-shadow(0 0 0 #fffdef);
+  z-index: -5;
+  transition: all 1s cubic-bezier(0, 0.4, 0, 1.01);
+}
+
+.star-3 {
+  position: absolute;
+  top: 40%;
+  left: 40%;
+  width: 5px;
+  height: auto;
+  filter: drop-shadow(0 0 0 #fffdef);
+  z-index: -5;
+  transition: all 1s cubic-bezier(0, 0.4, 0, 1.01);
+}
+
+.star-4 {
+  position: absolute;
+  top: 20%;
+  left: 40%;
+  width: 8px;
+  height: auto;
+  filter: drop-shadow(0 0 0 #fffdef);
+  z-index: -5;
+  transition: all 0.8s cubic-bezier(0, 0.4, 0, 1.01);
+}
+
+.star-5 {
+  position: absolute;
+  top: 25%;
+  left: 45%;
+  width: 15px;
+  height: auto;
+  filter: drop-shadow(0 0 0 #fffdef);
+  z-index: -5;
+  transition: all 0.6s cubic-bezier(0, 0.4, 0, 1.01);
+}
+
+.star-6 {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  width: 5px;
+  height: auto;
+  filter: drop-shadow(0 0 0 #fffdef);
+  z-index: -5;
+  transition: all 0.8s ease;
+}
+
+.button3:hover {
+  background: transparent;
+  color: #920707;
+  box-shadow: 0 0 25px #9207078c;
+}
+
+.button3:hover .star-1 {
+  position: absolute;
+  top: -80%;
+  left: -30%;
+  width: 25px;
+  height: auto;
+  filter: drop-shadow(0 0 10px #fffdef);
+  z-index: 2;
+}
+
+.button3:hover .star-2 {
+  position: absolute;
+  top: -25%;
+  left: 10%;
+  width: 15px;
+  height: auto;
+  filter: drop-shadow(0 0 10px #fffdef);
+  z-index: 2;
+}
+
+.button3:hover .star-3 {
+  position: absolute;
+  top: 55%;
+  left: 25%;
+  width: 5px;
+  height: auto;
+  filter: drop-shadow(0 0 10px #fffdef);
+  z-index: 2;
+}
+
+.button3:hover .star-4 {
+  position: absolute;
+  top: 30%;
+  left: 80%;
+  width: 8px;
+  height: auto;
+  filter: drop-shadow(0 0 10px #fffdef);
+  z-index: 2;
+}
+
+.button3:hover .star-5 {
+  position: absolute;
+  top: 25%;
+  left: 115%;
+  width: 15px;
+  height: auto;
+  filter: drop-shadow(0 0 10px #fffdef);
+  z-index: 2;
+}
+
+.button3:hover .star-6 {
+  position: absolute;
+  top: 5%;
+  left: 60%;
+  width: 5px;
+  height: auto;
+  filter: drop-shadow(0 0 10px #fffdef);
+  z-index: 2;
+}
+
+.fil0 {
+  fill: #fffdef;
+}
+
+
+</style>
+
+
+<script>
+function openMobileMenu() {
+  const mobileNav = document.querySelector('.mobile-nav');
+  const body = document.body;
+  if (mobileNav) {
+    mobileNav.classList.add('is-open');
+    body.classList.add('no-scroll');
+  }
+}
+
+function closeMobileMenu() {
+  const mobileNav = document.querySelector('.mobile-nav');
+  const body = document.body;
+  if (mobileNav) {
+    mobileNav.classList.remove('is-open');
+    body.classList.remove('no-scroll');
+    
+    const dropdownContents = document.querySelectorAll('.mobile-nav__dropdown-content');
+    const dropdownToggles = document.querySelectorAll('.mobile-nav__dropdown-toggle');
+    
+    dropdownContents.forEach(content => content.classList.remove('is-open'));
+    dropdownToggles.forEach(toggle => toggle.classList.remove('is-open'));
+  }
+}
+
+function toggleMobileDropdown(button) {
+  event.stopPropagation();
+  
+  const dropdownContent = button.parentElement.nextElementSibling;
+  const isOpen = dropdownContent.classList.contains('is-open');
+  
+  const allDropdowns = document.querySelectorAll('.mobile-nav__dropdown-content');
+  const allToggles = document.querySelectorAll('.mobile-nav__dropdown-toggle');
+  
+  allDropdowns.forEach(dropdown => dropdown.classList.remove('is-open'));
+  allToggles.forEach(toggle => toggle.classList.remove('is-open'));
+  
+  if (!isOpen) {
+    dropdownContent.classList.add('is-open');
+    button.classList.add('is-open');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const mobileToggle = document.querySelector('.mobile-menu-toggle');
+  if (mobileToggle) {
+    mobileToggle.addEventListener('click', openMobileMenu);
+  }
+  
+  const mobileClose = document.querySelector('.mobile-nav__close');
+  if (mobileClose) {
+    mobileClose.addEventListener('click', closeMobileMenu);
+  }
+  
+  
+  const mobileNav = document.querySelector('.mobile-nav');
+  if (mobileNav) {
+    mobileNav.addEventListener('click', function(e) {
+      if (e.target === mobileNav) {
+        closeMobileMenu();
+      }
+    });
+  }
+});
+
+</script>

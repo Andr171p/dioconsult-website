@@ -1,2 +1,33 @@
-Django>=6,<6.1
-wagtail==7.3rc1
+# dio_website_cms
+Django>=5.2,<5.3
+wagtail>=7.1,<7.2
+
+whitenoise==6.6.0
+# Django extensions and utilities
+django-tailwind==4.2.0
+django-htmx==1.26.0
+django-cors-headers==4.8.0
+djangorestframework==3.15.2
+django-filter==23.5
+django-extensions==4.1.0
+wagtailmenus==4.0.4
+
+# Server
+gunicorn==21.2.0
+
+# Your existing packages
+asgiref==3.10.0
+django-appconf==1.1.0
+django-compressor==4.5.1
+rcssmin==1.1.2
+rjsmin==1.2.2
+sqlparse==0.5.3
+tzdata==2025.2
+
+# Additional packages
+fuzzywuzzy==0.18.0
+python-levenshtein==0.27.1
+pytz==2025.2
+wagtail-modelchooser==4.0.1
+
+python-dotenv>=1.0.0

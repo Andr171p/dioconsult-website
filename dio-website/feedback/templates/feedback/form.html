@@ -1,0 +1,92 @@
+{% load wagtailcore_tags wagtailsettings_tags static %}
+
+
+ <div class="margin-bottom_none w-form">
+    <form id="feedbackForm">
+        {% csrf_token %}
+        
+        
+        <!-- Поле email -->
+        <div class="input margin-bottom_small">
+            <label for="id_email">Email:</label>
+            <input type="email" name="email" id="id_email" class="input_field w-input" placeholder="Email" required>
+        </div>
+        
+        
+        <!-- Поле message -->
+        <div class="input margin-bottom_small">
+            <label for="id_message">Сообщение:</label>
+            <textarea name="message" id="id_message" class="input_field w-input" placeholder="Сообщение" rows="4" required></textarea>
+        </div>
+        
+        <!-- Согласие с политикой конфиденциальности -->
+                        <div class="checkbox-field margin-bottom_medium">
+                            <label class="w-checkbox checkbox-field">
+                                <input type="checkbox" name="agreement" id="agreement" required>
+                                <span class="checkbox-label w-form-label">Я согласен с <a href="/privacy-policy/" target="_blank" class="text-link is-secondary">политикой конфиденциальности</a> компании ДИО-Консалт</span>
+                            </label>
+                        </div>
+        <!-- Скрытое поле csrftoken (для вашей кастомной проверки) -->
+        <input type="hidden" name="csrftoken" id="id_csrftoken" value="">
+        
+        <button type="submit" class="button w-button">Отправить</button>
+    </form>
+</div>
+
+<script>
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    document.getElementById('id_csrftoken').value = csrfToken;
+    
+    const formData = new FormData(this);
+    const jsonData = {};
+    
+    formData.forEach((value, key) => {
+        jsonData[key] = value;
+    });
+    
+    Swal.fire({
+        title: 'Отправка...',
+        text: 'Пожалуйста, подождите',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    
+    fetch('/feedback/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify(jsonData)
+    })
+    .then(response => {
+        if (response.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Успешно!',
+                text: 'Ваше сообщение отправлено',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+            this.reset();
+        } else {
+            throw new Error('Ошибка сервера');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Ошибка',
+            text: 'Не удалось отправить сообщение. Попробуйте еще раз.',
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'OK'
+        });
+    });
+});
+</script>

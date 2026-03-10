@@ -1,0 +1,133 @@
+{% load wagtailcore_tags wagtailsettings_tags static %}
+
+{% get_settings use_default_site=True as contact_settings %}
+
+<section class="section is-secondary" id="contact-section">
+    <div class="container">
+        <div class="w-layout-grid grid_2-col tablet-1-col gap-large">
+            <div class="card_body_small heading_h4">
+                <div class="eyebrow heading_h5">Контактная информация</div>
+                <h2 class="heading_h3 margin-bottom_medium">{{ contact_settings.base.ContactSettings.section_title }}</h2>
+                <div class="heading_h5">{{ contact_settings.base.ContactSettings.section_description }}</div>
+
+                <div class="contact-list heading_h3 ">
+                    {% if contact_settings.base.ContactSettings.primary_phone or contact_settings.base.ContactSettings.secondary_phone %}
+                    <div class="contact-item py-5 py-5" style="display: flex; align-items: center; gap: 10px;">
+                        <div class="icon is-small">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32" fill="currentColor">
+                                <path d="M26 29h-.17C6.18 27.87 3.39 11.29 3 6.23A3 3 0 0 1 5.76 3h5.51a2 2 0 0 1 1.86 1.26L14.65 8a1.92 1.92 0 0 1-.25 1.86l-2.13 3.15a1.55 1.55 0 0 0-.08 1.41l4.07 9a1.93 1.93 0 0 0 1.8 1.15 1.48 1.48 0 0 0 1.44-.91l2-5a1.56 1.56 0 0 1 1.43-1h4.63A1.92 1.92 0 0 1 29 21.58V26A3 3 0 0 1 26 29ZM6 5a1 1 0 0 0-1 1v.08C5.46 12 8.41 26 25.94 27A1 1 0 0 0 27 26v-4.42l-4.62.83-2 5a3.48 3.48 0 0 1-3.38 2.15 3.93 3.93 0 0 1-3.69-2.3l-4.07-9a3.55 3.55 0 0 1 .18-3.24l2.13-3.15A3.92 3.92 0 0 0 13.35 8l-1.52-3.63A1 1 0 0 0 11.27 4H5.76A1 1 0 0 0 5 5Z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            {% if contact_settings.base.ContactSettings.primary_phone %}
+                                <a href="tel:{{ contact_settings.base.ContactSettings.primary_phone }}" class="hover:text-red-900  is-secondary">{{ contact_settings.base.ContactSettings.primary_phone }}</a>
+                            {% endif %}
+                            {% if contact_settings.base.ContactSettings.secondary_phone %}
+                                <br>
+                                <a href="tel:{{ contact_settings.base.ContactSettings.secondary_phone }}" class="hover:text-red-900  is-secondary">{{ contact_settings.base.ContactSettings.secondary_phone }}</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if contact_settings.base.ContactSettings.primary_email or contact_settings.base.ContactSettings.secondary_email %}
+                    <div class="contact-item py-5" style="display: flex; align-items: center; gap: 10px;">
+                        <div class="icon is-small" style="display: flex; align-items: center; gap: 10px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32" fill="currentColor">
+                                <path d="M28 6H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h24a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2Zm-2.2 2L16 14.78 6.2 8ZM4 24V8.91l11.43 7.91a1 1 0 0 0 1.14 0L28 8.91V24Z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            {% if contact_settings.base.ContactSettings.primary_email %}
+                                <a href="mailto:{{ contact_settings.base.ContactSettings.primary_email }}" class=" hover:text-red-900 is-secondary">{{ contact_settings.base.ContactSettings.primary_email }}</a>
+                            {% endif %}
+                            {% if contact_settings.base.ContactSettings.secondary_email %}
+                                <br>
+                                <a href="mailto:{{ contact_settings.base.ContactSettings.secondary_email }}" class=" hover:text-red-900 is-secondary">{{ contact_settings.base.ContactSettings.secondary_email }}</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if contact_settings.base.ContactSettings.address %}
+                    <div class="contact-item py-5" style="display: flex; align-items: center; gap: 10px;">
+                        <div class="icon is-small">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32" fill="currentColor">
+                                <path d="M16 18a5 5 0 1 1 5-5 5 5 0 0 1-5 5Zm0-8a3 3 0 1 0 3 3 3 3 0 0 0-3-3Z"></path>
+                                <path d="M16 30l-8.44-9.17a28.7 28.7 0 0 1-.56-8.58A12.07 12.07 0 0 1 16 2a12.07 12.07 0 0 1 9 10.25 28.7 28.7 0 0 1-.56 8.58ZM8.83 18.83L16 26.85l7.17-8.02a26.7 26.7 0 0 0 .52-7.58A10.06 10.06 0 0 0 16 4a10.06 10.06 0 0 0-7.69 7.25 26.7 26.7 0 0 0 .52 7.58Z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="  ">{{ contact_settings.base.ContactSettings.address }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if contact_settings.base.ContactSettings.working_hours %}
+                    <div class="contact-item py-5" style="display: flex; align-items: center; gap: 10px;">
+                        <div class="icon is-small">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32" fill="currentColor">
+                                <path d="M16 30a14 14 0 1 1 14-14 14 14 0 0 1-14 14Zm0-26a12 12 0 1 0 12 12A12 12 0 0 0 16 4Z"></path>
+                                <path d="M20.59 22L15 16.41V7h2v8.58l5 5.01L20.59 22z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class=" ">{{ contact_settings.base.ContactSettings.working_hours }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card_body_small heading_h5">
+                <div class="header margin-bottom_medium">
+                    <div class="heading_h5 eyebrow">Есть вопросы?</div>
+                    <h2 class="heading_h3">Свяжитесь с нами<br>— получите консультацию</h2>
+                    <p class="paragraph_medium">Пишите нам в любое время: <a href="mailto:{{ contact_settings.base.ContactSettings.primary_email|default:'info@example.com' }}" class="text-link is-secondary text-span_padding">{{ contact_settings.base.ContactSettings.primary_email|default:'info@example.com' }}</a></p>
+                </div>
+                
+                {% include 'feedback/form.html' %}  
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    const answer = num1 + num2;
+    
+    document.getElementById('captcha-question').textContent = `${num1} + ${num2}`;
+    document.getElementById('captcha-answer').value = answer;
+    
+    const form = document.getElementById('wf-form-contact-form');
+    form.addEventListener('submit', function(e) {
+        const userAnswer = parseInt(document.getElementById('captcha').value);
+        const correctAnswer = parseInt(document.getElementById('captcha-answer').value);
+        const agreement = document.getElementById('agreement').checked;
+        
+        if (userAnswer !== correctAnswer) {
+            e.preventDefault();
+            alert('Неверный ответ на капчу. Попробуйте снова.');
+            location.reload(); 
+        }
+        if (!agreement) {
+            e.preventDefault();
+            alert('Пожалуйста, подтвердите согласие с политикой конфиденциальности.');
+        }
+    });
+});
+</script>
+
+<style>
+.checkbox-field {
+    display: flex;
+    align-items: center;
+}
+.checkbox-label {
+    font-size: 14px;
+    color: #666;
+}
+</style>

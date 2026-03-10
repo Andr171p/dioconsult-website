@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags static %}
+{% block content %}
+<!-- Описание вакансии -->
+<section class="section">
+    <div class="container heading_h5 ">
+        <h1>{{ page.title }}</h1>
+        
+        <div class="vacancy-content">
+            <h2>Обязанности:</h2>
+            <div>{{ page.responsibilities|linebreaks }}</div>
+            
+            <h2>Требования:</h2>
+            <div>{{ page.requirements|linebreaks }}</div>
+            
+            <h2>Условия:</h2>
+            <div>{{ page.conditions|linebreaks }}</div>
+        </div>
+    </div>
+</section>
+
+<!-- Форма отклика -->
+<section class="section">
+    <div class="container">
+        <h2>Откликнуться на вакансию</h2>
+        
+        {% include "vacancy/includes/vacancy_form.html" %}
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,132 @@
+{% load wagtailcore_tags wagtailimages_tags static %}
+
+
+<section class="section is-secondary ">
+    <div class="container">
+        <div class="header">
+            <div class="eyebrow">
+                Широкий выбор
+            </div>
+            <h2 class="heading_h2 max-width_large">Наши услуги</h2>
+        </div>
+
+        <div class="w-layout-grid grid_3-col gap-2 lg:gap-3 mt-12">
+            {% for service in page.get_services %}
+                <a href="{{ service.url }}" class="card relative overflow-hidden rounded-xl shadow-lg group" style="height: 400px;">
+                    {% if service.image %}
+                        {% image service.image fill-600x400 class="w-full h-full object-cover absolute top-0 left-0 z-0 transition-transform duration-1000 group-hover:scale-125" %}
+                    {% endif %}
+                    <div class="relative z-10 flex flex-col justify-between h-full p-6 bg-black/25 text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                            </div>
+                            <span class="px-2 py-1 rounded-full bg-red-600/50 text-white heading_h5">
+                                {{ service.get_category_display }}
+                            </span>
+                        </div>
+
+                        <div class="space-y-4 flex-grow">
+                            <h3 class="heading_h3 text-white">{{ service.headline }}</h3>
+                            <p class="subheading text-gray-200">
+                                {{ service.intro|striptags|truncatewords:14 }}
+                            </p>
+                        </div>
+
+                        <div class="mt-auto text-white text-xl">
+                            Подробнее
+                            <svg class="w-4 h-4 ml-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+            {% empty %}
+                <div class="col-span-3 text-center py-12">
+                    <p class="text-lg text-gray-600">
+                        <strong>Услуг пока нет.</strong><br>
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if page.get_services %}
+        <div class="text-center mt-12">
+            <a href="/services/" class="button is-secondary w-button px-6 py-3 rounded-xl border border-white/50 text-white font-medium hover:bg-white inline-flex items-center">
+                Все услуги
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+
+
+
+@media (max-width: 768px) {
+    .section {
+        padding: 2rem 0;
+    }
+
+    .grid_3-col {
+        grid-template-columns: 1fr; 
+        gap: 1rem;
+    }
+
+    .card {
+        height: 300px; 
+    }
+
+    .card .card_body_small {
+        padding: 1rem; 
+    }
+
+    .heading_h1 {
+        font-size: 1.5rem; 
+    }
+
+    .heading_h3 {
+        font-size: 1.2rem; 
+    }
+
+    .subheading {
+        font-size: 0.9rem; 
+    }
+
+    .button {
+        padding: 0.75rem 1.5rem; 
+        font-size: 0.9rem; 
+    }
+
+    .group:focus-within .card_body_small,
+    .group:active .card_body_small {
+        background-color: rgba(255, 255, 255, 0.7); 
+    }
+
+    .group:hover .card_body_small {
+        background-color: transparent; 
+    }
+
+    .group:focus-within .card img,
+    .group:active .card img {
+        transform: scale(1.125); 
+    }
+
+    .group:hover .card img {
+        transform: scale(1); 
+    }
+}
+
+@media (min-width: 769px) {
+    .group:hover .card_body_small {
+        background-color: rgba(255, 255, 255, 0.7); 
+    }
+
+    .group:hover .card img {
+        transform: scale(1.125); 
+    }
+}
+</style>

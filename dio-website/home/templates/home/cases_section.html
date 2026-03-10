@@ -1,0 +1,99 @@
+{% load wagtailcore_tags wagtailimages_tags static %}
+
+<section id="cases-section" class="section pt-10">
+    <div class="container">
+        <div class="header is-align-right mb-12">
+            <div class="eyebrow">Успешные проекты</div>
+            <h2 class="heading_h2 max-width_large">Наши кейсы</h2>
+        </div>
+
+       
+
+        <div class="space-y-10">
+    {% for case in page.get_cases %}
+        <a href="{{ case.url }}"
+           class="case-bg case-item block group relative p-8 sm:p-10 rounded-3xl transition-colors duration-300
+                  bg-[#151515] overflow-hidden cursor-pointer
+                  focus-visible:outline focus-visible:outline-4 focus-visible:outline-red-800/30 focus-visible:outline-offset-4">
+            <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                <div class="flex-shrink-0 w-32 h-32 flex items-center justify-center rounded-2xl overflow-hidden">
+                    {% if case.main_image %}
+                        {% image case.customer_logo width-140 height-140 as case_img %}
+                        <img src="{{ case_img.url }}" alt="{{ case.title }}"
+                             class="max-w-full max-h-full object-contain p-4">
+                    {% else %}
+                        <span class="text-5xl font-bold text-red-500">
+                            {{ case.title|first }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="flex-1 min-w-0 text-left">
+                    <span class="text-white inline-block px-4 py-1.5 rounded-full mb-3 heading_h5 font-semibold bg-red-800">
+                        {{ case.get_industry_display }}
+                    </span>
+
+                    <h3 class="heading_h3 font-bold text-xl leading-tight group-hover:text-red-800 transition-colors duration-300">
+                        {{ case.title }}
+                    </h3>
+
+                    <p class="heading_h5 line-clamp-2 leading-relaxed mt-2 text-base">
+                        {{ case.intro|striptags|truncatewords:28 }}
+                    </p>
+                </div>
+
+                <div class="hidden md:flex opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <svg class="w-9 h-9 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+            </div>
+        </a>
+    {% empty %}
+        <div class="text-center py-24 text-gray-600">
+            <h3 class="text-3xl font-bold mb-4 text-gray-800">Кейсов пока нет</h3>
+            <p class="max-w-md mx-auto text-lg">Скоро здесь появятся наши лучшие проекты.</p>
+        </div>
+    {% endfor %}
+</div>
+
+        <div class="text-center mt-12">
+            <a href="/cases/" class="button is-secondary w-button px-6 py-3 rounded-xl border border-white/50 text-white font-medium hover:bg-white hover:text-red-900 inline-flex items-center">
+                Все кейсы
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        -webkit-line-clamp: 2;
+    }
+
+    a:focus-visible {
+        outline: 4px solid rgba(239, 68, 68, 0.3);
+        outline-offset: 4px;
+        border-radius: 1.5rem;
+    }
+
+    .case-item {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+    }
+
+    @media (max-width: 768px) {
+        .case-item > div {
+            flex-direction: column !important;
+            text-align: center;
+        }
+        .case-item .text-left { text-align: center; }
+        .case-item .md\:flex { justify-content: center; }
+    }
+</style>

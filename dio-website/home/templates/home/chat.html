@@ -1,0 +1,392 @@
+{% load wagtailcore_tags wagtailimages_tags static %}
+
+<section id="hero-chat" class="hero-chat">
+  <div class="container container_chat">
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+
+    <div class="hero-text text-center">
+      <h1 class="heading_h1">AI-Алёша</h1>
+      <p class="hero-subtitle heading_h4">Ваш AI-помощник Алёша всегда на связи. Задайте вопрос и получите быстрый ответ прямо здесь.</p>
+    </div>
+
+    <div class="chat-widget" id="chatWidget">
+      <div class="chat-header" id="chatHeader">
+        <h2 class="heading_h2">Алёша</h2>
+        <span class="chat-hint animate-pulse hidden">Спросите Алёшу</span>
+        <!-- <button id="clearChatButton" class="heading_h5 clear-chat-button">Очистить чат</button> -->
+      </div>
+
+      <div class="chat-messages-container" id="chatMessagesContainer">
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <div class="initial-input-container" id="initialInputContainer">
+          <input class="heading_h5" type="text" id="initialChatInput" placeholder="Задайте свой вопрос..." aria-label="Введите первый вопрос">
+          <button id="initialSendButton" aria-label="Отправить">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="#fff"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="chat-input-container hidden" id="chatInputContainer">
+        <input type="text" id="chatInput" placeholder="С чем вам помочь?" aria-label="Введите сообщение">
+        <button id="sendButton" aria-label="Отправить">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="#fff"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .container_chat {
+    max-width: 1700px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+  const chatWidget = document.getElementById('chatWidget');
+  if (chatWidget) {
+    chatWidget.style.opacity = '1';
+    chatWidget.style.visibility = 'visible';
+  }
+
+  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+    console.error('GSAP или ScrollTrigger не загружены');
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.fromTo(
+    "#chatWidget",
+    { opacity: 0, y: 80, scale: 0.9 },
+    { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1, 
+      duration: 1.5, 
+      ease: "power3.out", 
+      scrollTrigger: { 
+        trigger: "#hero-chat", 
+        start: "top 90%", 
+        end: "top 30%", 
+        scrub: 1, 
+        toggleActions: "play none none reverse",
+      },
+      onComplete: () => {
+        chatWidget.style.transform = 'none';
+      }
+    }
+  );
+
+  gsap.fromTo(
+    "#chatHeader",
+    { opacity: 0, y: -20 },
+    { 
+      opacity: 1, 
+      y: 0, 
+      duration: 1, 
+      delay: 0.2, 
+      ease: "power2.out", 
+      scrollTrigger: { 
+        trigger: "#hero-chat", 
+        start: "top 90%", 
+        end: "top 30%", 
+        scrub: 1,
+      },
+      onComplete: () => {
+        document.getElementById('chatHeader').style.transform = 'none';
+      }
+    }
+  );
+
+  const initialChatInput = document.getElementById('initialChatInput');
+  const chatInput = document.getElementById('chatInput');
+  const initialSendButton = document.getElementById('initialSendButton');
+  const sendButton = document.getElementById('sendButton');
+  const chatMessages = document.getElementById('chatMessages');
+  const container = document.querySelector('.chat-messages-container');
+  const initialInputContainer = document.getElementById('initialInputContainer');
+  const chatInputContainer = document.getElementById('chatInputContainer');
+  const clearChatButton = document.getElementById('clearChatButton');
+  const placeholders = ["Задайте свой вопрос...", "Опишите свою задачу...", "Расскажите, чем помочь...", "Введите ваш запрос..."];
+
+  // Функция для генерации UUID v4
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+let chatId = localStorage.getItem('chatId');
+if (!chatId) {
+  chatId = generateUUID();
+  localStorage.setItem('chatId', chatId);
+}
+
+console.log('Chat ID:', chatId); // Для отладки
+
+  let chatHistory = JSON.parse(localStorage.getItem(`chatHistory_${chatId}`)) || [];
+  chatHistory.forEach(message => addMessage(message.role, message.text));
+
+  let currentPlaceholderIndex = 0;
+  if (chatHistory.length > 0) {
+    initialInputContainer.classList.add('hidden');
+    chatInputContainer.classList.remove('hidden');
+    gsap.fromTo(
+      chatInputContainer, 
+      { opacity: 0, y: 20 }, 
+      { 
+        opacity: 1, 
+        y: 0, 
+        duration: 0.5, 
+        ease: "power2.out",
+        onComplete: () => {
+          document.getElementById('chatInputContainer').style.transform = 'none';
+        }
+      }
+    );
+    chatInput.placeholder = placeholders[currentPlaceholderIndex];
+  }
+
+  const chatHint = document.querySelector('.chat-hint');
+  setTimeout(() => {
+    if (chatHint) {
+      chatHint.classList.remove('hidden');
+      gsap.fromTo(
+        chatHint, 
+        { opacity: 0.1 }, 
+        { opacity: 0.1, duration: 0.1, repeat: -1, yoyo: true }
+      );
+    }
+  }, 2);
+
+  let isTyping = false;
+
+  function typePlaceholder(text, inputElement, callback) {
+    if (isTyping || !inputElement) return;
+    isTyping = true;
+    let index = 0;
+    inputElement.placeholder = '';
+    function typeChar() {
+      if (index < text.length) {
+        inputElement.placeholder += text[index];
+        index++;
+        setTimeout(typeChar, 100);
+      } else {
+        isTyping = false;
+        setTimeout(callback, 2000);
+      }
+    }
+    typeChar();
+  }
+
+  function updatePlaceholder() {
+    const currentText = placeholders[currentPlaceholderIndex];
+    const activeInput = !initialInputContainer.classList.contains('hidden') ? initialChatInput : chatInput;
+    if (activeInput) {
+      typePlaceholder(currentText, activeInput, () => {
+        currentPlaceholderIndex = (currentPlaceholderIndex + 1) % placeholders.length;
+        updatePlaceholder();
+      });
+    }
+  }
+  updatePlaceholder();
+
+  function scrollToBottom() {
+    requestAnimationFrame(() => {
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
+    });
+  }
+
+  function addMessage(role, text) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = role === 'ai' ? 'message bot-message1' : 'message user-message1';
+    if (role === 'ai') {
+      messageDiv.innerHTML = marked.parse(text);
+    } else {
+      messageDiv.textContent = text;
+    }
+    chatMessages.appendChild(messageDiv);
+    requestAnimationFrame(scrollToBottom);
+  }
+
+  function typeEffect(element, text, delay = 15) {
+    let index = 0;
+    element.innerHTML = '';
+    function typeChar() {
+      if (index < text.length) {
+        index++;
+        const partialText = text.slice(0, index);
+        if (element.classList.contains('bot-message1')) {
+          element.innerHTML = marked.parse(partialText);
+        } else {
+          element.textContent = partialText;
+        }
+        requestAnimationFrame(scrollToBottom);
+        setTimeout(typeChar, delay);
+      }
+    }
+    typeChar();
+  }
+
+  function startTypingAnimation(element) {
+    let dotCount = 0;
+    element.textContent = 'Печатает';
+    const typingInterval = setInterval(() => {
+      dotCount = (dotCount + 1) % 4;
+      element.textContent = 'Печатает' + '.'.repeat(dotCount);
+    }, 500);
+    return typingInterval;
+  }
+
+ async function sendMessageToAPI(chatId, message) {
+  const typingMessage = document.createElement('div');
+  typingMessage.className = 'message bot-message1 typing-message';
+  chatMessages.appendChild(typingMessage);
+  requestAnimationFrame(scrollToBottom);
+
+  const typingInterval = startTypingAnimation(typingMessage);
+
+  try {
+    const response = await fetch('http://80.93.62.177:8001/api/v1/chat/completions', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json', 
+        'Accept': 'application/json' 
+      },
+      body: JSON.stringify({ 
+        chat_id: chatId, 
+        role: 'user', 
+        text: message 
+      })
+    });
+    
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    
+    const data = await response.json();
+    clearInterval(typingInterval);
+    chatMessages.removeChild(typingMessage);
+    
+    const botMessage = document.createElement('div');
+    botMessage.className = 'message bot-message1';
+    chatMessages.appendChild(botMessage);
+    
+    // Используем data.text из ответа API
+    typeEffect(botMessage, data.text);
+    
+    chatHistory.push({ role: 'user', text: message });
+    chatHistory.push({ role: 'ai', text: data.text });
+    localStorage.setItem(`chatHistory_${chatId}`, JSON.stringify(chatHistory));
+    
+  } catch (error) {
+    console.error('API Error:', error);
+    clearInterval(typingInterval);
+    chatMessages.removeChild(typingMessage);
+    
+    const errorMessage = `Ошибка: ${error.message}. Убедитесь что FastAPI RAG сервис запущен на порту 8001.`;
+    addMessage('ai', errorMessage);
+    
+    chatHistory.push({ role: 'ai', text: errorMessage });
+    localStorage.setItem(`chatHistory_${chatId}`, JSON.stringify(chatHistory));
+    requestAnimationFrame(scrollToBottom);
+  }
+}
+
+  function sendMessage(inputElement, isInitial = false) {
+    const text = inputElement.value.trim();
+    if (!text) return;
+    inputElement.value = '';
+
+    addMessage('user', text);
+
+    if (isInitial) {
+      gsap.to(
+        initialInputContainer, 
+        { 
+          opacity: 0, 
+          scale: 0.8, 
+          duration: 0.5, 
+          ease: "power2.in",
+          onComplete: () => {
+            initialInputContainer.classList.add('hidden');
+            chatInputContainer.classList.remove('hidden');
+            gsap.fromTo(
+              chatInputContainer, 
+              { opacity: 0, y: 20 }, 
+              { 
+                opacity: 1, 
+                y: 0, 
+                duration: 0.5, 
+                ease: "power2.out",
+                onComplete: () => {
+                  document.getElementById('chatInputContainer').style.transform = 'none';
+                }
+              }
+            );
+            chatInput.placeholder = placeholders[currentPlaceholderIndex];
+          }
+        }
+      );
+    }
+
+    sendMessageToAPI(chatId, text);
+  }
+
+  if (initialSendButton && initialChatInput) {
+    initialSendButton.addEventListener('click', () => sendMessage(initialChatInput, true));
+    initialChatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(initialChatInput, true); });
+  }
+
+  if (sendButton && chatInput) {
+    sendButton.addEventListener('click', () => sendMessage(chatInput));
+    chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(chatInput); });
+  }
+
+  if (clearChatButton) {
+    clearChatButton.addEventListener('click', clearChat);
+  }
+
+  function adjustChatHeight() {
+    if (window.innerWidth <= 767) {
+      const chatWidget = document.getElementById('chatWidget');
+      const heroText = document.querySelector('.hero-text');
+      const availableHeight = window.innerHeight - (heroText ? heroText.offsetHeight : 0) - 40;
+      chatWidget.style.height = `${availableHeight}px`;
+    }
+  }
+
+  adjustChatHeight();
+  window.addEventListener('resize', adjustChatHeight);
+
+  function clearChat() {
+    chatMessages.innerHTML = ''; 
+    chatHistory = []; 
+    localStorage.removeItem(`chatHistory_${chatId}`); 
+    initialInputContainer.classList.remove('hidden'); 
+    chatInputContainer.classList.add('hidden'); 
+    chatInput.value = ''; 
+    gsap.fromTo(
+      initialInputContainer,
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }
+    );
+  }
+});
+</script>

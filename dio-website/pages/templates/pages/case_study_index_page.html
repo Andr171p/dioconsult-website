@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags static %}
+{% block content %}
+<section id="cases-section" class="section pt-10">
+    <div class="container ">
+        <div class="mb-12">
+            <h2 class="heading_h2 font-bold">Кейсы</h2>
+        </div>
+
+<div class="mb-16">
+    <div class="flex flex-wrap justify-center gap-3 sm:gap-5">
+        <!-- Все проекты -->
+        <a href="{% pageurl page %}"
+           class="heading_h5  group px-7 py-3.5 rounded-2xl font-medium text-base transition-all duration-200 flex items-center gap-2.5 relative
+                  {% if not current_industry %}
+                      bg-red-900 text-white shadow-sm
+                  {% else %}
+                        hover:text-gray-300 
+                  {% endif %}">
+            <span>Все проекты</span>
+            {% if not current_industry %}
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                </svg>
+            {% else %}
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-red-900 rounded-full transition-all duration-300 group-hover:w-6"></span>
+            {% endif %}
+        </a>
+
+        <!-- Отрасли -->
+        {% for industry_id, industry_name in INDUSTRY_CHOICES %}
+        <a href="?industry={{ industry_id }}"
+           class="heading_h5 group px-7 py-3.5 rounded-2xl font-medium text-base transition-all duration-200 flex items-center gap-2.5 relative
+                  {% if current_industry == industry_id %}
+                      bg-red-900 text-white shadow-sm
+                  {% else %}
+                       hover:text-gray-300
+                  {% endif %}">
+            <span>{{ industry_name }}</span>
+            {% if current_industry == industry_id %}
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                </svg>
+            {% else %}
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-red-900 rounded-full transition-all duration-300 group-hover:w-6"></span>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+        <div class="space-y-10">
+            {% for case in cases %}
+            <a href="{% pageurl case %}"
+               class="case-bg case-item block group relative p-8 sm:p-10 rounded-3xl transition-colors duration-300
+                      bg-[#151515]  overflow-hidden cursor-pointer
+                      focus-visible:outline focus-visible:outline-4 focus-visible:outline-red-800/30 focus-visible:outline-offset-4">
+                <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                    <!-- Логотип -->
+                    <div class="flex-shrink-0 w-32 h-32 flex items-center justify-center rounded-2xl overflow-hidden">
+                        {% if case.specific.customer_logo %}
+                            {% image case.specific.customer_logo width-140 height-140 as case_img %}
+                            <img src="{{ case_img.url }}" alt="{{ case.title }}"
+                                 class="max-w-full max-h-full object-contain p-4">
+                        {% else %}
+                            <span class="text-5xl font-bold text-red-500">
+                                {{ case.title|first }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Контент -->
+                    <div class="flex-1 min-w-0 text-left">
+                        {% if case.specific.get_industry_display %}
+                        <span class=" text-white inline-block px-4 py-1.5 rounded-full mb-3 heading_h5 font-semibold bg-red-800">
+                            {{ case.specific.get_industry_display }}
+                        </span>
+                        {% endif %}
+                        <h3 class="heading_h3 font-bold text-xl leading-tight group-hover:text-red-800 transition-colors duration-300">
+                            {{ case.title }}
+                        </h3>
+                        <p class="heading_h5 line-clamp-2 leading-relaxed mt-2 text-base">
+                            {{ case.specific.intro|striptags|truncatewords:28 }}
+                        </p>
+                    </div>
+
+                    <div class="hidden md:flex opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <svg class="w-9 h-9 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <div class="text-center py-24 text-gray-600">
+                <h3 class="text-3xl font-bold mb-4 text-gray-800">Проектов пока нет</h3>
+                <p class="max-w-md mx-auto text-lg">Скоро здесь появятся наши лучшие кейсы</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ПАГИНАЦИЯ -->
+        {% if cases.has_other_pages %}
+        <div class="text-center mt-16">
+            <div class="inline-flex items-center gap-2 bg-white rounded-2xl p-3 border border-gray-300 shadow-md">
+                {% if cases.has_previous %}
+                <a href="?page={{ cases.previous_page_number }}{% if current_industry %}&industry={{ current_industry }}{% endif %}"
+                   class="px-5 py-2.5 text-sm font-medium rounded-xl transition-all text-gray-700 hover:text-red-600 hover:bg-red-50">
+                    Назад
+                </a>
+                {% endif %}
+                {% for num in cases.paginator.page_range %}
+                    {% if cases.number == num %}
+                    <span class="px-5 py-2.5 text-sm font-bold rounded-xl bg-red-600 text-white">{{ num }}</span>
+                    {% elif num > cases.number|add:-3 and num < cases.number|add:3 %}
+                    <a href="?page={{ num }}{% if current_industry %}&industry={{ current_industry }}{% endif %}"
+                       class="px-5 py-2.5 text-sm font-medium rounded-xl transition-all text-gray-700 hover:text-red-600 hover:bg-red-50">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+                {% if cases.has_next %}
+                <a href="?page={{ cases.next_page_number }}{% if current_industry %}&industry={{ current_industry }}{% endif %}"
+                   class="px-5 py-2.5 text-sm font-medium rounded-xl transition-all text-gray-700 hover:text-red-600 hover:bg-red-50">
+                    Вперед
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        -webkit-line-clamp: 2;
+    }
+
+    a:focus-visible {
+        outline: 4px solid rgba(239, 68, 68, 0.3);
+        outline-offset: 4px;
+        border-radius: 1.5rem;
+    }
+
+    .case-item {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+    }
+
+    @media (max-width: 768px) {
+        .case-item > div {
+            flex-direction: column !important;
+            text-align: center;
+        }
+        .case-item .md\:flex { justify-content: center; }
+        .case-item .text-left { text-align: center; }
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,6 @@
+{% if value %}
+    {% with value|first as item %}
+        <div class="key">{{ item.key }}</div>
+        <div class="value">{{ item.value }}</div>
+    {% endwith %}
+{% endif %}

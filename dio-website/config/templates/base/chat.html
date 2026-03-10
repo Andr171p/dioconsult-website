@@ -1,0 +1,319 @@
+{% load wagtailcore_tags wagtailimages_tags static %}
+
+<div class="assistant-wrapper" id="assistantWrapper">
+    <button class="assistant-toggle" id="assistantToggle" onclick="toggleAssistant()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#ffffff" fill="none">
+    <path d="M14.1706 20.8905C18.3536 20.6125 21.6856 17.2332 21.9598 12.9909C22.0134 12.1607 22.0134 11.3009 21.9598 10.4707C21.6856 6.22838 18.3536 2.84913 14.1706 2.57107C12.7435 2.47621 11.2536 2.47641 9.8294 2.57107C5.64639 2.84913 2.31441 6.22838 2.04024 10.4707C1.98659 11.3009 1.98659 12.1607 2.04024 12.9909C2.1401 14.536 2.82343 15.9666 3.62791 17.1746C4.09501 18.0203 3.78674 19.0758 3.30021 19.9978C2.94941 20.6626 2.77401 20.995 2.91484 21.2351C3.05568 21.4752 3.37026 21.4829 3.99943 21.4982C5.24367 21.5285 6.08268 21.1757 6.74868 20.6846C7.1264 20.4061 7.31527 20.2668 7.44544 20.2508C7.5756 20.2348 7.83177 20.3403 8.34401 20.5513C8.8044 20.7409 9.33896 20.8579 9.8294 20.8905C11.2536 20.9852 12.7435 20.9854 14.1706 20.8905Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+    <path d="M7.5 15L9.34189 9.47434C9.43631 9.19107 9.7014 9 10 9C10.2986 9 10.5637 9.19107 10.6581 9.47434L12.5 15M15.5 9V15M8.5 13H11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+    </button>
+    <div class="assistant-panel" id="aiAssistant">
+        <div class="assistant-header">
+            <h2 class="heading_h4 text-center">AI Ассистент</h2>
+            <p class="paragraph_large text-color_secondary text-center margin-bottom_large">
+                Задайте вопрос и получите мгновенную помощь!
+            </p>
+        </div>
+        <div class="assistant-body" id="assistantBody">
+            <div class="assistant-messages" id="assistantMessages">
+                <div class="message bot-message">Привет! Я ваш AI-ассистент. Задайте мне вопрос!</div>
+            </div>
+            <div class="assistant-input-container w-form">
+                <input type="text" id="assistantInput" class="input_field w-input" placeholder="Введите сообщение...">
+                <button class="button w-button" id="assistantSend">Отправить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.assistant-wrapper {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    z-index: 1000;
+}
+
+.assistant-toggle {
+    width: 60px;
+    height: 60px;
+    background: #b10f0f;
+    border: none;
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.assistant-toggle:hover {
+    background: #cc0a0a;
+    transform: scale(1.1);
+}
+
+.assistant-panel {
+    width: 350px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    right: 0;
+    bottom: 70px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease, display 0s;
+    overflow: hidden;
+    display: none; /* Скрыт по умолчанию */
+}
+
+.assistant-panel.active {
+    transform: translateX(0);
+    display: block;
+}
+
+.assistant-header {
+    margin-bottom: 20px;
+}
+
+.assistant-body {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.assistant-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.message {
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 8px;
+    max-width: 80%;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    word-break: break-word;
+    animation: slideIn 0.3s ease;
+}
+
+.bot-message {
+    background: #f8f9fa;
+    color: #333;
+    align-self: flex-start;
+}
+
+.user-message {
+    background: #1a2b3b;
+    color: #ffffff;
+    align-self: flex-end;
+}
+
+.assistant-input-container {
+    padding: 12px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.assistant-input-container .input_field {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    box-sizing: border-box;
+    color: #000000;
+}
+
+.assistant-input-container .button {
+    padding: 10px 20px;
+    background: #1a2b3b;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.assistant-input-container .button:hover {
+    background: #0056b3;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@media (max-width: 767px) {
+    .assistant-panel {
+        width: 90%;
+        right: 5%;
+    }
+    .assistant-body {
+        max-height: 300px;
+    }
+    .assistant-messages {
+        max-height: 250px;
+    }
+}
+
+.assistant-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.assistant-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.assistant-messages::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.assistant-messages::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const assistantToggle = document.getElementById('assistantToggle');
+    const assistantPanel = document.getElementById('aiAssistant');
+    const assistantMessages = document.getElementById('assistantMessages');
+    const assistantInput = document.getElementById('assistantInput');
+    const assistantSend = document.getElementById('assistantSend');
+
+    if (!assistantToggle || !assistantPanel || !assistantMessages || !assistantInput || !assistantSend) {
+        console.error('One or more assistant elements not found:', {
+            assistantToggle: !!assistantToggle,
+            assistantPanel: !!assistantPanel,
+            assistantMessages: !!assistantMessages,
+            assistantInput: !!assistantInput,
+            assistantSend: !!assistantSend
+        });
+        return;
+    }
+
+    // Функция для плавной прокрутки к последнему сообщению
+    function scrollToBottom() {
+        if (assistantMessages) {
+            assistantMessages.scrollTop = assistantMessages.scrollHeight;
+            setTimeout(() => {
+                assistantMessages.scrollTop = assistantMessages.scrollHeight;
+            }, 50);
+        }
+    }
+
+    // Переключение чата
+    function toggleAssistant() {
+        assistantPanel.classList.toggle('active');
+        if (assistantPanel.classList.contains('active')) {
+            setTimeout(scrollToBottom, 300);
+        }
+    }
+
+    // Эмуляция эффекта печати текста
+    function typeEffect(element, text, delay = 50) {
+        let index = 0;
+        element.textContent = '';
+        function typeChar() {
+            if (index < text.length) {
+                element.textContent += text[index];
+                index++;
+                setTimeout(typeChar, delay);
+            }
+        }
+        typeChar();
+    }
+
+    // Отправка сообщения к API
+    async function sendAssistantMessage() {
+        const messageText = assistantInput.value.trim();
+        if (!messageText) return;
+
+        assistantInput.value = '';
+
+        const userMessage = document.createElement('div');
+        userMessage.className = 'message user-message';
+        userMessage.textContent = messageText;
+        assistantMessages.appendChild(userMessage);
+        scrollToBottom();
+
+        // Добавляем временное сообщение "Печатает..."
+        const typingMessage = document.createElement('div');
+        typingMessage.className = 'message bot-message typing-message';
+        typingMessage.textContent = 'Печатает...';
+        assistantMessages.appendChild(typingMessage);
+        scrollToBottom();
+
+        try {
+            const response = await fetch('http://localhost:8001/api/v1/rag', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ chat_id: '1', role: 'user', text: messageText })
+            });
+            if (!response.ok) throw new Error('Ошибка сети');
+            const data = await response.json();
+
+            // Удаляем "Печатает..." и добавляем реальный ответ
+            assistantMessages.removeChild(typingMessage);
+            const botMessage = document.createElement('div');
+            botMessage.className = 'message bot-message';
+            assistantMessages.appendChild(botMessage);
+            typeEffect(botMessage, data.text);
+            scrollToBottom();
+        } catch (error) {
+            console.error('Ошибка:', error);
+            assistantMessages.removeChild(typingMessage);
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'message bot-message';
+            errorMessage.textContent = 'Ошибка при получении ответа.';
+            assistantMessages.appendChild(errorMessage);
+            scrollToBottom();
+        }
+    }
+
+    scrollToBottom();
+
+    assistantToggle.addEventListener('click', toggleAssistant);
+    assistantSend.addEventListener('click', sendAssistantMessage);
+    assistantInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') sendAssistantMessage();
+    });
+
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.addedNodes.length) {
+                setTimeout(scrollToBottom, 10);
+            }
+        });
+    });
+
+    observer.observe(assistantMessages, { childList: true, subtree: true });
+
+    document.addEventListener('click', function(event) {
+        const isClickInside = assistantPanel.contains(event.target);
+        const isToggleClick = assistantToggle.contains(event.target);
+        if (assistantPanel.classList.contains('active') && !isClickInside && !isToggleClick) {
+            assistantPanel.classList.remove('active');
+        }
+    });
+});
+</script>

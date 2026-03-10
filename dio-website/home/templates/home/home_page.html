@@ -1,21 +1,178 @@
 {% extends "base.html" %}
-{% load static %}
+{% load wagtailcore_tags wagtailimages_tags wagtailsettings_tags  static %}
+ {% get_settings use_default_site=True as settings %}
+{% block title %}{{ page.title }} | {{ settings.base.SiteSettings.name }}{% endblock %}
 
-{% block body_class %}template-homepage{% endblock %}
-
-{% block extra_css %}
-
-{% comment %}
-Delete the line below if you're just getting started and want to remove the welcome screen!
-{% endcomment %}
-<link rel="stylesheet" href="{% static 'css/welcome_page.css' %}">
-{% endblock extra_css %}
 
 {% block content %}
+{% if page.header_section %}
+    {% for block in page.header_section %}
+        {% if block.block_type == 'header' %}
+            <header class="section is-secondary pt-16">
+                <div class="container">
+                    <div class="w-layout-grid grid_2-col tablet-1-col gap-xxlarge">
+                        <div id="w-node-{{ block.id }}-header" class="header margin-bottom_none">
+                            {% for slide in block.value.slides %}
+                                <h1 class="heading_h1">{{ slide.value.headline }}</h1>
+                                <div class="subheading heading_h4">{{ slide.value.subheadline }}</div>
+                                <div class="button-group">
+                                    {% if block.value.buttons %}
 
-{% comment %}
-Delete the line below if you're just getting started and want to remove the welcome screen!
-{% endcomment %}
-{% include 'home/welcome_page.html' %}
 
-{% endblock content %}
+
+
+                                        {% for button in block.value.buttons %}
+  <a href="{{ button.value.url }}"
+     class="animated-btn-tilda{% if button.is_secondary %} is-secondary{% endif %} ">
+     
+     <svg viewBox="0 0 160 45" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
+       <rect x="0" y="0" width="160" height="45" rx="8" ry="8"
+             fill="none"
+             stroke="#fff"
+             stroke-width="2"
+             stroke-dasharray="0 422"
+             stroke-dashoffset="0"
+             style="transition: all 1.35s cubic-bezier(0.19,1,0.22,1);"/>
+     </svg>
+     
+     {{ button.text }}
+  </a>
+{% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="image-ratio_1x1">
+                            {% for slide in block.value.slides %}
+                                {% for image in slide.value.images %}
+                                    
+                                        {% image image width-1920 height-1080 as img %}
+                                        <img src="{{ img.url }}" 
+                                            width="276" 
+                                            height="276"
+                                            alt="{{ slide.value.headline }} [image {{ forloop.counter0|add:1 }}]" 
+                                            loading="lazy" 
+                                            class="image_cover">
+
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </header>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+<style>
+  .animated-btn-tilda {
+    font-family: var(--ai-gen-82921b10-4b39-48f0-b346-808cf4903d29-1758515251776_typography---button--button-font);
+    font-size: var(--ai-gen-82921b10-4b39-48f0-b346-808cf4903d29-1758515251776_typography---base-typography--base-font-size);
+    font-weight: 400;
+  line-height: 1.2;
+  text-decoration: none;
+    position: relative;
+    display: inline-block;
+    width: 160px;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 400;
+    
+    color: #fff !important;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .animated-btn-tilda:not(.is-secondary) {
+    background: #920707;
+  }
+
+  .animated-btn-tilda.is-secondary {
+    background: transparent;
+    box-shadow: 0 0 0 2px #ffffff inset;
+  }
+
+  .animated-btn-tilda:hover:not(.is-secondary) {
+    background: #d40b0b;
+  }
+
+  .animated-btn-tilda:hover.is-secondary {
+    background: rgba(228, 228, 228, 0.525);
+    box-shadow: 0 0 0 3px #000 inset;
+  }
+
+  .animated-btn-tilda svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+
+  .animated-btn-tilda rect {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2;
+    stroke-dasharray: 0 422;
+    stroke-dashoffset: 0;
+    transition: all 1.35s cubic-bezier(0.19, 1, 0.22, 1);
+    width: 160;
+    height: 45;
+    x: 0;
+    y: 0;
+    rx: 8;
+    ry: 8;
+  }
+
+  .animated-btn-tilda:hover rect,
+  .animated-btn-tilda:active rect {
+    stroke-width: 4;
+    stroke-dasharray: 80 410;
+    stroke-dashoffset: -330;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.animated-btn-tilda').forEach(btn => {
+      const rect = btn.querySelector('rect');
+
+      btn.addEventListener('mouseenter', () => {
+        rect.setAttribute('stroke-width', '4');
+        rect.setAttribute('stroke-dasharray', '80 410');
+        rect.setAttribute('stroke-dashoffset', '-330');
+      });
+
+      btn.addEventListener('mouseleave', () => {
+        rect.setAttribute('stroke-width', '2');
+        rect.setAttribute('stroke-dasharray', '0 422');
+        rect.setAttribute('stroke-dashoffset', '0');
+      });
+
+      btn.addEventListener('touchstart', () => {
+        rect.setAttribute('stroke-width', '4');
+        rect.setAttribute('stroke-dasharray', '80 410');
+        rect.setAttribute('stroke-dashoffset', '-330');
+      });
+    });
+  });
+</script>
+
+{% include "home/chat.html" %}
+
+
+
+{% include "home/partnership_section.html" with page=page %}
+{% include "home/services.html" %}
+{% include "home/cases_section.html" %}
+{% include "home/news.html" %}
+{% include "home/location.html" %}
+
+
+
+
+{% endblock %}
+
