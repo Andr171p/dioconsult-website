@@ -30,6 +30,8 @@ CSRF_COOKIE_HTTPONLY = False
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin",
+
     "wagtail.contrib.table_block",
     "wagtail.contrib.settings",
     "wagtail.contrib.forms",
@@ -61,7 +63,6 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_htmx",
     "tailwind",
-    "jazzmin",
     # Наши приложения
     "home",
     "search",

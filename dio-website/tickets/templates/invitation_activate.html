@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Активация приглашения</title>
+</head>
+<body>
+<h2>Установите пароль для доступа в систему</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Сохранить пароль и войти</button>
+</form>
+</body>
+</html>
