@@ -1,10 +1,6 @@
 import os
 
-from dotenv import load_dotenv
-
 from .base import *
-
-load_dotenv()
 # -------------------------------
 # РАЗРАБОТКА — локальный запуск
 # -------------------------------
@@ -14,7 +10,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "*"]
 
 # Секретный ключ можно захардкодить локально (или оставить через .env)
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", "dvanbirgcdamkpm")
 
 MAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.environ.get("EMAIL_HOST")

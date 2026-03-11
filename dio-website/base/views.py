@@ -1,33 +1,32 @@
-# base/models.py (или home/models.py — куда у тебя вынесена HomePage)
+# base/tickets.py (или home/tickets.py — куда у тебя вынесена HomePage)
 
-from django.core.mail import send_mail
-from django.shortcuts import redirect
-from django.contrib import messages
+from typing import Any
+
 from django.conf import settings
-from django.contrib.auth import get_user_model  #
-
-from wagtail.models import Page
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from django.http import HttpRequest
+from django.shortcuts import redirect
 from wagtail.admin.models import Message
+from wagtail.models import Page
 
 from .forms import ContactForm
-from .models import ContactSettings, ContactSubmission  # предполагаем, что эти модели здесь же
+from .models import ContactSettings, ContactSubmission
 
 
 class HomePage(Page):
-    def get_context(self, request, *args, **kwargs):
+    def get_context(self, request: HttpRequest, *args, **kwargs) -> dict[str, Page | Any]:
         context = super().get_context(request, *args, **kwargs)
-        # Добавляем форму и настройки в контекст
-        context['form'] = ContactForm(request.POST or None)
-        context['contact_settings'] = ContactSettings.for_request(request)
+        context["form"] = ContactForm(request.POST or None)
+        context["contact_settings"] = ContactSettings.for_request(request)
         return context
 
     def serve(self, request):
         context = self.get_context(request)
-        form = context['form']
-        contact_settings = context['contact_settings']
-
+        form = context["form"]
+        contact_settings = context["contact_settings"]
         if request.method == "POST" and form.is_valid():
-            # Сохраняем заявку
             submission = ContactSubmission(
                 name=form.cleaned_data["name"],
                 email=form.cleaned_data["email"],
