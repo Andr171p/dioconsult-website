@@ -43,7 +43,7 @@ class CompanyAdmin(admin.ModelAdmin):
         """
 
         instances = formset.save(commit=False)
-        for deleted_object in form.deleted_objects:
+        for deleted_object in formset.deleted_objects:
             deleted_object.delete()
         for instance in instances:
             if instance.pk is None:
