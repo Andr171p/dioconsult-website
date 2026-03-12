@@ -4,6 +4,8 @@ from .views import InvitationActivateView
 
 urlpatterns = [
     path(
-        "invitation/<uuid:token>/", InvitationActivateView.as_view(), name="invitation_activate"
+        "invitation/activate/<uuid:token>/",
+        InvitationActivateView.as_view(),
+        name="invitation_activate"
     )
 ]

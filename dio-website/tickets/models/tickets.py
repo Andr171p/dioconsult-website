@@ -1,3 +1,5 @@
+# Тикеты и его аттрибуты
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -21,11 +23,11 @@ class Ticket(models.Model):
     STATUS_CHOICES = [
         ("new", "Новый"),  # только что создан, ещё не обработан
         ("open", "Открыт"),  # принят в работу
-        ("in_progress", "В работе"),  # активная работа
+        ("in_progress", "B работе"),  # активная работа
         ("waiting", "Ожидание"),  # ждём ответа клиента или внешних действий
         ("resolved", "Решён"),   # проблема решена, ожидает подтверждения клиента
         ("closed", "Закрыт"),  # окончательно закрыт (клиент подтвердил или автоматически)
-        ("reopened", "Переоткрыт"),  # клиент не согласен с решением
+        ("reopened", "Переоткрыт"),  # клиент не согласен c решением
     ]
     PRIORITY_CHOICES = [
         ("low", "Низкий"),
@@ -34,11 +36,11 @@ class Ticket(models.Model):
         ("critical", "Критический"),
     ]
 
-    company = models.ForeignKey(
-        "Company",
+    counterparty = models.ForeignKey(
+        "Counterparty",
         on_delete=models.CASCADE,
         related_name="tickets",
-        verbose_name="Компания",
+        verbose_name="Контрагент",
         null=True,
         blank=True,
     )
@@ -65,13 +67,13 @@ class Ticket(models.Model):
         verbose_name="Категория",
         related_name="tickets"
     )
-    created_by = models.ForeignKey(
+    author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="created_tickets",
         verbose_name="Автор"
     )
-    assigned_to = models.ForeignKey(
+    assignee = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
@@ -83,13 +85,13 @@ class Ticket(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name="Создан")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Обновлён")
     closed_at = models.DateTimeField(null=True, blank=True, verbose_name="Закрыт")
-    is_archived = models.BooleanField(default=False, verbose_name="В архиве")
+    is_archived = models.BooleanField(default=False, verbose_name="B архиве")
 
     class Meta:
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["status", "priority"]),
-            models.Index(fields=["created_by", "status"]),
+            models.Index(fields=["author", "status"]),
         ]
         verbose_name = "Тикет"
         verbose_name_plural = "Тикеты"
@@ -101,10 +103,10 @@ class Ticket(models.Model):
         return self.title
 
     def save(self, *args, **kwargs) -> None:
-        if not self.pk and not self.company and self.created_by:
-            first_company = self.created_by.companies.first()
-            if first_company:
-                self.company = first_company
+        if not self.pk and not self.counterparty and self.author:
+            counterparty = self.author.counterparties.first()
+            if counterparty:
+                self.counterparty = counterparty
         super().save(*args, **kwargs)
 
 
@@ -131,8 +133,8 @@ class Category(models.Model):
         return self.name
 
 
-class Comment(models.Model):
-    """Комментарий к тикету"""
+class ChatMessage(models.Model):
+    """Сообщение чата в контексте тикета"""
 
     ticket = models.ForeignKey(
         Ticket,
@@ -147,7 +149,7 @@ class Comment(models.Model):
         verbose_name="Автор"
     )
     text = models.TextField(verbose_name="Текст")
-    is_private = models.BooleanField(
+    is_internal = models.BooleanField(
         default=False,
         verbose_name="Внутренний комментарий",
         help_text="Виден только агентам поддержки"
@@ -156,8 +158,11 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ["created_at"]
-        verbose_name = "Комментарий"
-        verbose_name_plural = "Комментарии"
+        verbose_name = "Сообщение"
+        verbose_name_plural = "Сообщения"
+
+    def __str__(self) -> str:
+        return self.text[:100]
 
 
 class Attachment(models.Model):
@@ -173,8 +178,8 @@ class Attachment(models.Model):
         related_name="attachments",
         null=True, blank=True
     )
-    comment = models.ForeignKey(
-        Comment,
+    message = models.ForeignKey(
+        ChatMessage,
         on_delete=models.CASCADE,
         related_name="attachments",
         null=True, blank=True
@@ -191,8 +196,11 @@ class Attachment(models.Model):
         verbose_name = "Вложение"
         verbose_name_plural = "Вложения"
 
+    def __str__(self) -> str:
+        return "Вложение"
+
     def clean(self) -> None:
-        if (self.ticket is None) == (self.comment is None):
+        if (self.ticket is None) == (self.message is None):
             raise ValidationError(
                 "Вложение должно быть привязано либо к тикету, либо к комментарию!"
             )
