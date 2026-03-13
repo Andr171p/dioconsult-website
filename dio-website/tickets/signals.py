@@ -15,7 +15,7 @@ def send_invitation_email(
     """Отправка письма c ссылкой на регистрацию по email"""
 
     if created:
-        link = f"{settings.SITE_URL}/invitation/{instance.token}/"
+        link = f"{settings.SITE_URL}/invitation/activate/{instance.token}/"
         html_message = render_to_string(
             "emails/invitation.html",
             {"link": link, "counterparty": instance.counterparty},

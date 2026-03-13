@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приглашение в тикет-систему</title>
+    <style>
+        /* Базовые стили, многие почтовые клиенты поддерживают */
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .button {
+            display: inline-block; padding: 12px 24px;
+            background-color: #007bff; color: #ffffff !important;
+            text-decoration: none; border-radius: 4px;
+            font-weight: bold;
+        }
+        .footer { margin-top: 30px; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Приглашение в тикет-систему</h2>
+    <p>Здравствуйте!</p>
+    <p>Вам было отправлено приглашение для работы в тикет-системе от контрагента <strong>{{ counterparty.name }}</strong></p>
+    <p>Для завершения регистрации перейдите по ссылке ниже:</p>
+    <p style="text-align: center;">
+        <a href="{{ link }}" class="button">Принять приглашение</a>
+    </p>
+    <p>Если кнопка не работает, скопируйте и вставьте следующую ссылку в адресную строку браузера:</p>
+    <p>{{ link }}</p>
+    <p>Ссылка действительна в течение ограниченного времени.</p>
+    <p>Если вы не ожидали этого письма, просто проигнорируйте его.</p>
+    <hr>
+    <p class="footer">
+        С уважением, команда поддержки тикет-системы.<br>
+        Это автоматическое письмо, отвечать на него не нужно.
+    </p>
+</div>
+</body>
+</html>

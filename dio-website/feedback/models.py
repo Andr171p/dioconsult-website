@@ -1,7 +1,8 @@
 from typing import ClassVar
 
-from config.settings.dev import SITE_DOMAIN
 from django.db import models
+
+from config.settings.dev import SITE_URL as SITE_DOMAIN
 from notification.utils import create_admin_notification
 from utils import get_tumen_time
 

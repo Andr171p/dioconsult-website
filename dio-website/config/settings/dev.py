@@ -12,6 +12,7 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "*"]
 # Секретный ключ можно захардкодить локально (или оставить через .env)
 SECRET_KEY = os.getenv("SECRET_KEY", "dvanbirgcdamkpm")
 
+# Настройки MailDev
 MAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 if DEBUG:
@@ -24,10 +25,13 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = "noreply@example.com"
+DEFAULT_FROM_EMAIL = "admin@admin.com"
 SERVER_EMAIL = os.getenv("SERVER_EMAIL")
+
+
 FASTAPI_RAG = os.environ.get("FASTAPI_RAG")
-SITE_DOMAIN = os.environ.get("SITE_DOMAIN")
+
+SITE_URL = "http://localhost:8000"
 
 # === УБИРАЕМ ТО, ЧТО МЕШАЕТ ЛОКАЛЬНО ===
 
