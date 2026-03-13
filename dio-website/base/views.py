@@ -1,4 +1,4 @@
-# base/tickets.py (или home/tickets.py — куда у тебя вынесена HomePage)
+# base/ticket.py (или home/ticket.py — куда у тебя вынесена HomePage)
 
 from typing import Any
 

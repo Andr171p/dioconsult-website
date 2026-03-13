@@ -15,4 +15,4 @@ from .counterparty import Counterparty
 from .invitation import Invitation
 from .notification import Notification
 from .profile import CounterpartyUser, Profile
-from .tickets import Attachment, Category, ChatMessage, Tag, Ticket
+from .ticket import Attachment, Category, ChatMessage, Tag, Ticket

@@ -2,7 +2,7 @@
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 
 
 class Tag(models.Model):
@@ -43,6 +43,13 @@ class Ticket(models.Model):
         verbose_name="Контрагент",
         null=True,
         blank=True,
+    )
+    number = models.CharField(
+        max_length=32,
+        unique=True,
+        editable=False,
+        verbose_name="Номер тикета",
+        db_index=True,
     )
     title = models.CharField(max_length=255, verbose_name="Заголовок")
     description = models.TextField(verbose_name="Описание")
@@ -107,6 +114,25 @@ class Ticket(models.Model):
             counterparty = self.author.counterparties.first()
             if counterparty:
                 self.counterparty = counterparty
+            else:
+                raise ValidationError(
+                    "У автора нет связанного контрагента. Укажите контрагента явно.",
+                    code="no_counterparty"
+                )
+        if not self.pk and not self.number:
+            prefix = self.counterparty.name.upper()[:3]
+            prefix = "".join([char for char in prefix if char.isalnum()])
+            with transaction.atomic():
+                last = (
+                    Ticket.objects
+                    .filter(counterparty=self.counterparty)
+                    .order_by("-number")
+                    .first()
+                )
+                seq = 1
+                if last and last.number.startswith(prefix):
+                    seq = int(last.number[len(prefix):]) + 1
+                self.number = f"{prefix}{seq:08d}"
         super().save(*args, **kwargs)
 
 

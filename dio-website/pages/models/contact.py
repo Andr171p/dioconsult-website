@@ -1,4 +1,4 @@
-# home/tickets.py или contact/tickets.py
+# home/ticket.py или contact/ticket.py
 from django.db import models
 from wagtail.models import Page
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
