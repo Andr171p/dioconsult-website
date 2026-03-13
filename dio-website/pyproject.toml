@@ -17,6 +17,7 @@ dependencies = [
     "django-htmx>=1.27.0",
     "tailwind>=3.1.5b0",
     "pytz>=2026.1.post1",
+    "wagtail-ai>=3.1.0",
 ]
 
 [tool.ruff]

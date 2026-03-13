@@ -27,11 +27,13 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 CSRF_USE_SESSIONS = False  # должно быть False
 CSRF_COOKIE_HTTPONLY = False
+
 # Application definition
 
 INSTALLED_APPS = [
+    # Admin panel
     "jazzmin",
-
+    #
     "wagtail.contrib.table_block",
     "wagtail.contrib.settings",
     "wagtail.contrib.forms",
@@ -63,7 +65,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_htmx",
     "tailwind",
-    # Наши приложения
+    "wagtail_ai",
+    #
     "home",
     "search",
     "base",
@@ -196,6 +199,7 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.MultiPartParser",
     ],
 }
+
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -342,9 +346,7 @@ SERVER_EMAIL = os.environ.get("SERVER_EMAIL")
 FASTAPI_RAG = os.environ.get("FASTAPI_RAG")
 SITE_DOMAIN = os.environ.get("SITE_DOMAIN")
 
-
-#25.02.2026 add user registration
-
+# Настрока админ панели
 JAZZMIN_SETTINGS = {
     "site_title": "Ticket System",
     "site_header": "HelpDesk Admin",
@@ -359,4 +361,30 @@ JAZZMIN_SETTINGS = {
     "navigation_expanded": True,
     "theme": "darkly",  # Базовая темная тема
     "accent": "accent-danger", # Те самые красные акценты
+}
+
+# Настроки SEO AI агента для контент-менеджмента
+
+def get_yandex_cloud_model_uri(model_id: str) -> str:
+    """Получение URI модели из каталога Yandex Cloud"""
+
+    return f"gpt://{os.getenv('YANDEX_CLOUD_FOLDER_ID')}/{model_id}"
+
+
+WAGTAIL_AI = {
+    "PROVIDERS": {
+        "default": {
+            "provider": "openai",
+            "model": get_yandex_cloud_model_uri("qwen3-235b-a22b-fp8/latest"),
+            "api_key": os.getenv("OPENAI_API_KEY"),
+            "api_base": os.getenv("YANDEX_CLOUD_BASE_URL"),
+        },
+        "vision": {
+           "provider": "openai",
+            "model": get_yandex_cloud_model_uri("gemma-3-27b-it/latest"),
+            "api_key": os.getenv("OPENAI_API_KEY"),
+            "api_base": os.getenv("YANDEX_CLOUD_BASE_URL"),
+        }
+    },
+    "IMAGE_DESCRIPTION_PROVIDER": "vision",
 }
