@@ -13,17 +13,21 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "*"]
 SECRET_KEY = os.getenv("SECRET_KEY", "dvanbirgcdamkpm")
 
 MAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = os.environ.get("EMAIL_HOST")
-EMAIL_PORT = os.environ.get("EMAIL_PORT")
-EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True").strip().lower() == "true"
-EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "False").strip().lower() == "true"
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
-SERVER_EMAIL = os.environ.get("SERVER_EMAIL")
+
+if DEBUG:
+    EMAIL_HOST = "localhost"
+    EMAIL_PORT = 1027
+
+# EMAIL_HOST = os.getenv("EMAIL_HOST")
+# EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = "noreply@example.com"
+SERVER_EMAIL = os.getenv("SERVER_EMAIL")
 FASTAPI_RAG = os.environ.get("FASTAPI_RAG")
 SITE_DOMAIN = os.environ.get("SITE_DOMAIN")
-# Отправка писем в консоль
 
 # === УБИРАЕМ ТО, ЧТО МЕШАЕТ ЛОКАЛЬНО ===
 
